@@ -1,8 +1,15 @@
+using FinTrack.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddEntityFrameworkNpgsql()
+            .AddDbContext<ApiDbContext>(opt => 
+            opt.UseNpgsql(builder.Configuration.GetConnectionString("finTrackDbConnection")));
 
 var app = builder.Build();
 
