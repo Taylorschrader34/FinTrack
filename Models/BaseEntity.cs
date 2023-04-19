@@ -8,7 +8,7 @@ namespace FinTrack.Models;
 public class BaseEntity
 {
     public int Id {get; set;}
-    public int Status {get; set;}
-    public DateTime DateAdded {get; set;}
-    public DateTime DateUpdated {get; set;}
+    public int Status {get; set;} = 1;
+    public DateTime DateAdded {get; set;} = DateTime.UtcNow;
+    public DateTime DateUpdated {get; set;} = DateTime.UtcNow;
 }
