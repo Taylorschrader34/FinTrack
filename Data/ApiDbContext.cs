@@ -52,5 +52,17 @@ public class ApiDbContext : DbContext
             .OnDelete(DeleteBehavior.Restrict)
             .HasConstraintName("FK_ExpenseTransaction_Source");
         });
+
+        modelBuilder.Entity<Source>(entity => 
+        {
+            entity.HasIndex(s => s.Name)
+            .IsUnique();
+        });
+
+        modelBuilder.Entity<Category>(entity => 
+        {
+            entity.HasIndex(c => c.Name)
+            .IsUnique();
+        });
     }
 }
