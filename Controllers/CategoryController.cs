@@ -20,7 +20,7 @@ public class CategoryController : ControllerBase
     }
 
     // Create a new Category
-    [HttpPost]
+    [HttpPost("CreateCategory")]
     public async Task<Category> CreateCategory( [FromBody] Category category)
     {
         _dbContext.Category.Add(category);
@@ -29,21 +29,21 @@ public class CategoryController : ControllerBase
     }
 
     // Read all Category
-    [HttpGet]
+    [HttpGet("GetAllCategories")]
     public async Task<List<Category>> GetAllCategories()
     {
         return await _dbContext.Category.ToListAsync();
     }
 
     // Read a single Category by Id
-    [HttpGet]
+    [HttpGet("GetCategoryById")]
     public async Task<Category> GetCategoryById(int id)
     {
         return await _dbContext.Category.FindAsync(id);
     }
 
     // Update an existing Source
-    [HttpPut]
+    [HttpPut("UpdateCategory")]
     public async Task UpdateCategory(Category category)
     {
         _dbContext.Entry(category).State = EntityState.Modified;
@@ -51,7 +51,7 @@ public class CategoryController : ControllerBase
     }
 
     // Delete an existing Category
-    [HttpDelete]
+    [HttpDelete("DeleteCategory")]
     public async Task DeleteCategory(int id)
     {
         var category = await _dbContext.Category.FindAsync(id);

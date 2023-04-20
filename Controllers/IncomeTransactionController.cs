@@ -20,7 +20,7 @@ public class IncomeTransactionController : ControllerBase
     }
 
     // Create a new IncomeTransaction
-    [HttpPost]
+    [HttpPost("CreateIncomeTransaction")]
     public async Task<IncomeTransaction> CreateIncomeTransaction(IncomeTransaction incomeTransaction)
     {
         _dbContext.IncomeTransaction.Add(incomeTransaction);
@@ -29,21 +29,21 @@ public class IncomeTransactionController : ControllerBase
     }
 
     // Read all IncomeTransactions
-    [HttpGet]
+    [HttpGet("GetAllIncomeTransactions")]
     public async Task<List<IncomeTransaction>> GetAllIncomeTransactions()
     {
         return await _dbContext.IncomeTransaction.ToListAsync();
     }
 
     // Read a single IncomeTransaction by Id
-    [HttpGet]
+    [HttpGet("GetIncomeTransactionById")]
     public async Task<IncomeTransaction> GetIncomeTransactionById(int id)
     {
         return await _dbContext.IncomeTransaction.FindAsync(id);
     }
 
     // Update an existing IncomeTransaction
-    [HttpPut]
+    [HttpPut("UpdateIncomeTransaction")]
     public async Task UpdateIncomeTransaction(IncomeTransaction incomeTransaction)
     {
         _dbContext.Entry(incomeTransaction).State = EntityState.Modified;
@@ -51,7 +51,7 @@ public class IncomeTransactionController : ControllerBase
     }
 
     // Delete an existing IncomeTransaction
-    [HttpDelete]
+    [HttpDelete("DeleteIncomeTransaction")]
     public async Task DeleteIncomeTransaction(int id)
     {
         var incomeTransaction = await _dbContext.IncomeTransaction.FindAsync(id);

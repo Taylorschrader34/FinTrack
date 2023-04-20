@@ -20,7 +20,7 @@ public class SourceController : ControllerBase
     }
 
     // Create a new Source
-    [HttpPost]
+    [HttpPost("CreateSource")]
     public async Task<Source> CreateSource(Source source)
     {
         _dbContext.Source.Add(source);
@@ -29,21 +29,21 @@ public class SourceController : ControllerBase
     }
 
     // Read all Sources
-    [HttpGet]
+    [HttpGet("GetAllSources")]
     public async Task<List<Source>> GetAllSources()
     {
         return await _dbContext.Source.ToListAsync();
     }
 
     // Read a single Source by Id
-    [HttpGet]
+    [HttpGet("GetSourceById")]
     public async Task<Source> GetSourceById(int id)
     {
         return await _dbContext.Source.FindAsync(id);
     }
 
     // Update an existing Source
-    [HttpPut]
+    [HttpPut("UpdateSource")]
     public async Task UpdateSource(Source source)
     {
         _dbContext.Entry(source).State = EntityState.Modified;
@@ -51,7 +51,7 @@ public class SourceController : ControllerBase
     }
 
     // Delete an existing Source
-    [HttpDelete]
+    [HttpDelete("DeleteSource")]
     public async Task DeleteSource(int id)
     {
         var source = await _dbContext.Source.FindAsync(id);
