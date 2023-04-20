@@ -20,7 +20,7 @@ public class ExpenseTransactionController : ControllerBase
     }
 
     // Create a new ExpenseTransaction
-    [HttpPost]
+    [HttpPost("CreateExpenseTransaction")]
     public async Task<ExpenseTransaction> CreateExpenseTransaction(ExpenseTransaction expenseTransaction)
     {
         _dbContext.ExpenseTransaction.Add(expenseTransaction);
@@ -29,21 +29,21 @@ public class ExpenseTransactionController : ControllerBase
     }
 
     // Read all ExpenseTransactions
-    [HttpGet]
+    [HttpGet("GetAllExpenseTransactions")]
     public async Task<List<ExpenseTransaction>> GetAllExpenseTransactions()
     {
         return await _dbContext.ExpenseTransaction.ToListAsync();
     }
 
     // Read a single ExpenseTransaction by Id
-    [HttpGet]
+    [HttpGet("GetExpenseTransactionById")]
     public async Task<ExpenseTransaction> GetExpenseTransactionById(int id)
     {
         return await _dbContext.ExpenseTransaction.FindAsync(id);
     }
 
     // Update an existing ExpenseTransaction
-    [HttpPut]
+    [HttpPut("UpdateExpenseTransaction")]
     public async Task UpdateExpenseTransaction(ExpenseTransaction expenseTransaction)
     {
         _dbContext.Entry(expenseTransaction).State = EntityState.Modified;
@@ -51,7 +51,7 @@ public class ExpenseTransactionController : ControllerBase
     }
 
     // Delete an existing ExpenseTransaction
-    [HttpDelete]
+    [HttpDelete("DeleteExpenseTransaction")]
     public async Task DeleteExpenseTransaction(int id)
     {
         var expenseTransaction = await _dbContext.ExpenseTransaction.FindAsync(id);
