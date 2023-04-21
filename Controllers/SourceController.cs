@@ -20,13 +20,13 @@ public class SourceController : ControllerBase
     }
 
     // Create a new Source
-    [HttpPost("CreateSource")]
-    public async Task<Source> CreateSource([FromBody] Source source)
-    {
-        _dbContext.Source.Add(source);
-        await _dbContext.SaveChangesAsync();
-        return source;
-    }
+    // [HttpPost("CreateSource")]
+    // public async Task<Source> CreateSource([FromBody] Source source)
+    // {
+    //     _dbContext.Source.Add(source);
+    //     await _dbContext.SaveChangesAsync();
+    //     return source;
+    // }
 
     // Read all Sources
     [HttpGet("GetAllSources")]
@@ -36,26 +36,26 @@ public class SourceController : ControllerBase
     }
 
     // Read a single Source by Id
-    [HttpGet("GetSourceById")]
-    public async Task<Source> GetSourceById(int id)
-    {
-        return await _dbContext.Source.FindAsync(id);
-    }
+    // [HttpGet("GetSourceById")]
+    // public async Task<Source> GetSourceById(int id)
+    // {
+    //     return await _dbContext.Source.FindAsync(id);
+    // }
 
     // Update an existing Source
-    [HttpPut("UpdateSource")]
-    public async Task UpdateSource([FromBody] Source source)
-    {
-        _dbContext.Entry(source).State = EntityState.Modified;
-        await _dbContext.SaveChangesAsync();
-    }
+    // [HttpPut("UpdateSource")]
+    // public async Task UpdateSource([FromBody] Source source)
+    // {
+    //     _dbContext.Entry(source).State = EntityState.Modified;
+    //     await _dbContext.SaveChangesAsync();
+    // }
 
     // Delete an existing Source
-    [HttpDelete("DeleteSource")]
-    public async Task DeleteSource(int id)
-    {
-        var source = await _dbContext.Source.FindAsync(id);
-        _dbContext.Source.Remove(source);
-        await _dbContext.SaveChangesAsync();
-    }
+    // [HttpDelete("DeleteSource")]
+    // public async Task DeleteSource(int id)
+    // {
+    //     var source = await _dbContext.Source.FindAsync(id);
+    //     _dbContext.Source.Remove(source);
+    //     await _dbContext.SaveChangesAsync();
+    // }
 }

@@ -37,13 +37,13 @@ public class ApiDbContext : DbContext
             .HasConstraintName("FK_Transaction_Source");
         });
 
-        modelBuilder.Entity<Source>(entity => 
+        modelBuilder.Entity<Source>(entity =>
         {
             entity.HasIndex(s => s.Name)
             .IsUnique();
         });
 
-        modelBuilder.Entity<Category>(entity => 
+        modelBuilder.Entity<Category>(entity =>
         {
             entity.HasIndex(c => c.Name)
             .IsUnique();
