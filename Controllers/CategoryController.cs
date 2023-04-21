@@ -21,7 +21,7 @@ public class CategoryController : ControllerBase
 
     // Create a new Category
     [HttpPost("CreateCategory")]
-    public async Task<Category> CreateCategory( [FromBody] Category category)
+    public async Task<Category> CreateCategory([FromBody] Category category)
     {
         _dbContext.Category.Add(category);
         await _dbContext.SaveChangesAsync();
@@ -44,7 +44,7 @@ public class CategoryController : ControllerBase
 
     // Update an existing Source
     [HttpPut("UpdateCategory")]
-    public async Task UpdateCategory(Category category)
+    public async Task UpdateCategory([FromBody] Category category)
     {
         _dbContext.Entry(category).State = EntityState.Modified;
         await _dbContext.SaveChangesAsync();

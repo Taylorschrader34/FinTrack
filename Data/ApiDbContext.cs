@@ -11,8 +11,7 @@ public class ApiDbContext : DbContext
 {
     public virtual DbSet<Category> Category { get; set; }
     public virtual DbSet<Source> Source { get; set; }
-    public virtual DbSet<IncomeTransaction> IncomeTransaction { get; set; }
-    public virtual DbSet<ExpenseTransaction> ExpenseTransaction { get; set; }
+    public virtual DbSet<Transaction> Transaction { get; set; }
 
     public ApiDbContext(DbContextOptions<ApiDbContext> options) : base(options)
     {
@@ -23,34 +22,19 @@ public class ApiDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<IncomeTransaction>(entity =>
+        modelBuilder.Entity<Transaction>(entity =>
         {
             entity.HasOne(i => i.Category)
-            .WithMany(c => c.IncomeTransactions)
+            .WithMany(c => c.Transactions)
             .HasForeignKey(x => x.CategoryId)
             .OnDelete(DeleteBehavior.Restrict)
-            .HasConstraintName("FK_IncomeTransaction_Category");
+            .HasConstraintName("FK_Transaction_Category");
 
             entity.HasOne(i => i.Source)
-            .WithMany(s => s.IncomeTransactions)
+            .WithMany(s => s.Transactions)
             .HasForeignKey(x => x.SourceId)
             .OnDelete(DeleteBehavior.Restrict)
-            .HasConstraintName("FK_IncomeTransaction_Source");
-        });
-
-        modelBuilder.Entity<ExpenseTransaction>(entity =>
-        {
-            entity.HasOne(i => i.Category)
-            .WithMany(c => c.ExpenseTransactions)
-            .HasForeignKey(x => x.CategoryId)
-            .OnDelete(DeleteBehavior.Restrict)
-            .HasConstraintName("FK_ExpenseTransaction_Category");
-
-            entity.HasOne(i => i.Source)
-            .WithMany(s => s.ExpenseTransactions)
-            .HasForeignKey(x => x.SourceId)
-            .OnDelete(DeleteBehavior.Restrict)
-            .HasConstraintName("FK_ExpenseTransaction_Source");
+            .HasConstraintName("FK_Transaction_Source");
         });
 
         modelBuilder.Entity<Source>(entity => 

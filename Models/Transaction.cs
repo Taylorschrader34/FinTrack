@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace FinTrack.Models;
 
-public class IncomeTransaction : BaseEntity
+public class Transaction : BaseEntity
 {
     public DateTime TransactionDate { get; set; }
     public int SourceId { get; set; }

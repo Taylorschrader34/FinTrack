@@ -3,6 +3,7 @@ using System;
 using FinTrack.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FinTrack.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    partial class ApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230420193447_condenceTransactionTables")]
+    partial class condenceTransactionTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -52,7 +54,7 @@ namespace FinTrack.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Category", (string)null);
+                    b.ToTable("Category");
                 });
 
             modelBuilder.Entity("FinTrack.Models.Source", b =>
@@ -85,7 +87,7 @@ namespace FinTrack.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Source", (string)null);
+                    b.ToTable("Source");
                 });
 
             modelBuilder.Entity("FinTrack.Models.Transaction", b =>
@@ -127,7 +129,7 @@ namespace FinTrack.Migrations
 
                     b.HasIndex("SourceId");
 
-                    b.ToTable("Transaction", (string)null);
+                    b.ToTable("Transaction");
                 });
 
             modelBuilder.Entity("FinTrack.Models.Transaction", b =>
