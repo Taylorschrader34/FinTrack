@@ -5,19 +5,19 @@ import Col from "react-bootstrap/Col";
 const TransactionForm = () => {
   const [showModal, setShowModal] = useState(false);
   const [isIncome, setIsIncome] = useState(false);
-  
-  const [amount, setAmount] = useState(isIncome ? "" : "-");
-  const [source, setSource] = useState("");
-  const [category, setCategory] = useState("");
+
+  const [amount, setAmount] = useState(0);
+  const [soureId, setSource] = useState({});
+  const [categoryId, setCategory] = useState({});
   const [description, setDescription] = useState("");
   const [transactionDate, setTransactionDate] = useState("");
 
-  const [sources, setSources] = useState([]);
+  const [sourceOptions, setSourceOptions] = useState([]);
   const [showNewSourceInput, setShowNewSourceInput] = useState(false);
   const [newSourceName, setNewSourceName] = useState("");
   const [newSourceDescription, setNewSourceDescription] = useState("");
 
-  const [categories, setCategories] = useState([]);
+  const [categoryOptions, setCategoryOptions] = useState([]);
   const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [newCategoryDescription, setNewCategoryDescription] = useState("");
@@ -34,7 +34,7 @@ const TransactionForm = () => {
     try {
       const response = await fetch("/source/GetAllSources");
       const data = await response.json();
-      setSources(data);
+      setSourceOptions(data);
     } catch (error) {
       console.error("Failed to fetch sources:", error);
     }
@@ -44,23 +44,90 @@ const TransactionForm = () => {
     try {
       const response = await fetch("/category/GetAllCategories");
       const data = await response.json();
-      setCategories(data);
+      setCategoryOptions(data);
     } catch (error) {
       console.error("Failed to fetch categories:", error);
     }
   };
 
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-    // Handle form submission logic here
-    // You can access the input values from the state variables (amount, source, category, transactionDate)
-    // and send them to the backend for further processing
-    console.log("Form submitted:", amount, source, category, transactionDate);
-    setShowModal(false); // Close the modal after form submission
+  // Handle form submit
+  const handleSubmit = async () => {
+    //Fill new Transaction's Source with the existing selected
+    // OR newly entered data
+    var tSource = {
+      id: 0,
+      name: "",
+      description: "",
+    };
+
+    if (newSourceName !== "") {
+      tSource.name = newSourceName;
+      tSource.description = newSourceDescription;
+    } else {
+      tSource.id = parseInt(soureId);
+    }
+
+    //Fill new Transaction's Category with the existing selected
+    // OR newly entered data
+    var tCategory = {
+      id: 0,
+      name: "",
+      description: "",
+    };
+
+    if (newCategoryName !== "") {
+      tCategory.name = newCategoryName;
+      tCategory.description = newCategoryDescription;
+    } else {
+      tCategory.id = parseInt(categoryId);
+    }
+
+    const transaction = {
+      Amount: isIncome ? parseFloat(amount) : -parseFloat(amount),
+      Source: tSource,
+      Category: tCategory,
+      Description: description,
+      TransactionDate: transactionDate,
+    };
+    // Submit the transaction to the backend
+    fetch("/transaction/ProcessTransaction", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(transaction),
+    })
+      .then((response) => {
+        if (response.ok) {
+          // Handle successful transaction creation
+          response.json().then((data) => {
+            console.log("Transaction created:", data.Message);
+            console.log("Transaction data:", data.Transaction);
+            handleModalClose();
+          });
+        } else {
+          // Handle error response
+          console.error("Error creating transaction:", response.status);
+        }
+      })
+      .catch((error) => console.error("Error creating transaction:", error));
   };
 
   const handleModalClose = () => {
     setShowModal(false); // Close the modal when the close button is clicked
+
+    // Reset form fields
+    setAmount(0);
+    setSource({});
+    setCategory({});
+    setDescription("");
+    setTransactionDate(new Date());
+    setShowNewSourceInput(false);
+    setNewSourceName("");
+    setNewSourceDescription("");
+    setShowNewCategoryInput(false);
+    setNewCategoryName("");
+    setNewCategoryDescription("");
   };
 
   return (
@@ -92,33 +159,22 @@ const TransactionForm = () => {
           <Modal.Title>{isIncome ? "Add Income" : "Add Expense"}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form onSubmit={handleFormSubmit}>
+          <Form>
             <Form.Group controlId="amount">
               <Form.Label>Amount</Form.Label>
               <Form.Control
                 type="number"
                 step="0.01"
-                placeholder={
-                  isIncome ? "Enter amount" : "Enter amount (negative)"
-                }
+                inputMode="numeric"
+                placeholder={"Enter amount"}
                 value={amount}
-                onChange={(e) => setAmount(e.target.value)}
+                onChange={(e) =>
+                  setAmount(Math.abs(parseFloat(e.target.value)))
+                }
               />
             </Form.Group>
             <Form.Group controlId="source">
               <Form.Label>Source</Form.Label>
-              <Form.Control
-                as="select"
-                value={source}
-                onChange={(e) => setSource(e.target.value)}
-              >
-                <option value="">Select source</option>
-                {sources.map((src) => (
-                  <option key={src.id} value={src.name}>
-                    {src.name}
-                  </option>
-                ))}
-              </Form.Control>
               <Form.Text>
                 {showNewSourceInput ? (
                   <>
@@ -139,29 +195,31 @@ const TransactionForm = () => {
                     <br />
                   </>
                 ) : (
-                  <Button
-                    variant="link"
-                    onClick={() => setShowNewSourceInput(true)}
-                  >
-                    Add New Source
-                  </Button>
+                  <>
+                    <Form.Control
+                      as="select"
+                      value={soureId}
+                      onChange={(e) => setSource(e.target.value)}
+                    >
+                      <option value="">Select source</option>
+                      {sourceOptions.map((src) => (
+                        <option key={src.id} value={src.id}>
+                          {src.name}
+                        </option>
+                      ))}
+                    </Form.Control>
+                    <Button
+                      variant="light"
+                      onClick={() => setShowNewSourceInput(true)}
+                    >
+                      Add New Source
+                    </Button>
+                  </>
                 )}
               </Form.Text>
             </Form.Group>
             <Form.Group controlId="category">
               <Form.Label>Category</Form.Label>
-              <Form.Control
-                as="select"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-              >
-                <option value="">Select category</option>
-                {categories.map((c) => (
-                  <option key={c.id} value={c.name}>
-                    {c.name}
-                  </option>
-                ))}
-              </Form.Control>
               <Form.Text>
                 {showNewCategoryInput ? (
                   <>
@@ -184,12 +242,26 @@ const TransactionForm = () => {
                     <br />
                   </>
                 ) : (
-                  <Button
-                    variant="link"
-                    onClick={() => setShowNewCategoryInput(true)}
-                  >
-                    Add New Category
-                  </Button>
+                  <>
+                    <Form.Control
+                      as="select"
+                      value={categoryId}
+                      onChange={(e) => setCategory(e.target.value)}
+                    >
+                      <option value="">Select category</option>
+                      {categoryOptions.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.name}
+                        </option>
+                      ))}
+                    </Form.Control>
+                    <Button
+                      variant="light"
+                      onClick={() => setShowNewCategoryInput(true)}
+                    >
+                      Add New Category
+                    </Button>
+                  </>
                 )}
               </Form.Text>
             </Form.Group>
@@ -214,7 +286,7 @@ const TransactionForm = () => {
               <Button variant="secondary" onClick={handleModalClose}>
                 Close
               </Button>
-              <Button variant="primary" type="submit">
+              <Button variant="primary" onClick={handleSubmit}>
                 Submit
               </Button>
             </Modal.Footer>

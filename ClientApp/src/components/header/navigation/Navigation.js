@@ -1,6 +1,5 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import PropTypes from "prop-types";
 
 import FullLogo from "../../../assets/images/example.png";
 
@@ -27,16 +26,6 @@ export const Navigation = (props) => {
             <li>
               <Link to="/Reports" style={buttonStyle}>
                 Reports
-              </Link>
-            </li>
-            <li>
-              <Link to="/Counter" style={buttonStyle}>
-                Counter
-              </Link>
-            </li>
-            <li>
-              <Link to="/Fetch-data" style={buttonStyle}>
-                Fetch Data
               </Link>
             </li>
           </ul>

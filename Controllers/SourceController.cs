@@ -21,7 +21,7 @@ public class SourceController : ControllerBase
 
     // Create a new Source
     [HttpPost("CreateSource")]
-    public async Task<Source> CreateSource(Source source)
+    public async Task<Source> CreateSource([FromBody] Source source)
     {
         _dbContext.Source.Add(source);
         await _dbContext.SaveChangesAsync();
@@ -44,7 +44,7 @@ public class SourceController : ControllerBase
 
     // Update an existing Source
     [HttpPut("UpdateSource")]
-    public async Task UpdateSource(Source source)
+    public async Task UpdateSource([FromBody] Source source)
     {
         _dbContext.Entry(source).State = EntityState.Modified;
         await _dbContext.SaveChangesAsync();
