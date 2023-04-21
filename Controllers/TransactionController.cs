@@ -106,45 +106,63 @@ public class TransactionController : ControllerBase
         }
     }
 
-
     // Create a new Transaction
-    [HttpPost("CreateTransaction")]
-    public async Task<Transaction> CreateTransaction([FromBody] Transaction Transaction)
-    {
-        _dbContext.Transaction.Add(Transaction);
-        await _dbContext.SaveChangesAsync();
-        return Transaction;
-    }
+    // [HttpPost("CreateTransaction")]
+    // public async Task<Transaction> CreateTransaction([FromBody] Transaction Transaction)
+    // {
+    //     _dbContext.Transaction.Add(Transaction);
+    //     await _dbContext.SaveChangesAsync();
+    //     return Transaction;
+    // }
 
     // Read all Transactions
     [HttpGet("GetAllTransactions")]
-    public async Task<List<Transaction>> GetAllTransactions()
+    public async Task<List<TransactionOutputModel>> GetAllTransactions()
     {
-        return await _dbContext.Transaction.ToListAsync();
+        var transactions = await _dbContext.Transaction
+            .Include(t => t.Source) // Include the Source entity
+            .Include(t => t.Category) // Include the Category entity
+            .ToListAsync();
+
+        List<TransactionOutputModel> transactionOutputList = new List<TransactionOutputModel>();
+
+        foreach(Transaction transaction in transactions){
+            transactionOutputList.Add(new TransactionOutputModel(){
+                TransactionDate = transaction.TransactionDate,
+                Amount = transaction.Amount,
+                Description = transaction.Description,
+                SourceId = transaction.SourceId,
+                SourceName = transaction.Source.Name,
+                CategoryId = transaction.CategoryId,
+                CategoryName = transaction.Category.Name
+            });
+        }
+
+        return transactionOutputList;
     }
 
     // Read a single Transaction by Id
-    [HttpGet("GetTransactionById")]
-    public async Task<Transaction> GetTransactionById(int id)
-    {
-        return await _dbContext.Transaction.FindAsync(id);
-    }
+    // [HttpGet("GetTransactionById")]
+    // public async Task<Transaction> GetTransactionById(int id)
+    // {
+    //     return await _dbContext.Transaction.FindAsync(id);
+    // }
 
     // Update an existing Transaction
-    [HttpPut("UpdateTransaction")]
-    public async Task UpdateTransaction([FromBody] Transaction Transaction)
-    {
-        _dbContext.Entry(Transaction).State = EntityState.Modified;
-        await _dbContext.SaveChangesAsync();
-    }
+    // [HttpPut("UpdateTransaction")]
+    // public async Task UpdateTransaction([FromBody] Transaction Transaction)
+    // {
+    //     _dbContext.Entry(Transaction).State = EntityState.Modified;
+    //     await _dbContext.SaveChangesAsync();
+    // }
 
     // Delete an existing Transaction
-    [HttpDelete("DeleteTransaction")]
-    public async Task DeleteTransaction(int id)
-    {
-        var Transaction = await _dbContext.Transaction.FindAsync(id);
-        _dbContext.Transaction.Remove(Transaction);
-        await _dbContext.SaveChangesAsync();
-    }
+    // [HttpDelete("DeleteTransaction")]
+    // public async Task DeleteTransaction(int id)
+    // {
+    //     var Transaction = await _dbContext.Transaction.FindAsync(id);
+    //     _dbContext.Transaction.Remove(Transaction);
+    //     await _dbContext.SaveChangesAsync();
+    // }
 
 }

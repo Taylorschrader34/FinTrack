@@ -1,9 +1,11 @@
 import React from "react";
 import { Routes, Route } from "react-router";
+
 import Layout from "./components/pages/Layout";
 import Home from "./components/pages/Home";
 import NoPage from "./components/pages/NoPage";
 import Reports from "./components/pages/report/Reports";
+import ManageTransactions from "./components/pages/ManageTransactions";
 
 import "./App.css";
 
@@ -21,6 +23,7 @@ function App() {
           element={<Reports reportType={"yearly"} />}
         />
         <Route path="Reports" element={<Reports />} />
+        <Route path="Transactions" element={<ManageTransactions />} />
         <Route path="*" element={<NoPage />} />
       </Route>
     </Routes>

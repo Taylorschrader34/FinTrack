@@ -24,6 +24,11 @@ export const Navigation = (props) => {
               </Link>
             </li>
             <li>
+              <Link to="/Transactions" style={buttonStyle}>
+                Transactions
+              </Link>
+            </li>
+            <li>
               <Link to="/Reports" style={buttonStyle}>
                 Reports
               </Link>
