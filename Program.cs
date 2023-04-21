@@ -1,5 +1,7 @@
-using FinTrack.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.InMemory;
+using FinTrack.Data;
+using FinTrack.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,11 +9,38 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddEntityFrameworkNpgsql()
+var environment = builder.Environment;
+
+if (environment.IsDevelopment())
+{
+    builder.Services.AddDbContext<ApiDbContext>(options =>
+        options.UseInMemoryDatabase("FinTrackDb")
+        .EnableSensitiveDataLogging()); // Use in-memory database in development
+}
+else
+{
+    builder.Services.AddEntityFrameworkNpgsql()
             .AddDbContext<ApiDbContext>(opt => 
-            opt.UseNpgsql(builder.Configuration.GetConnectionString("finTrackDbConnection")));
+            opt.UseNpgsql(builder.Configuration.GetConnectionString("finTrackDbConnection"))
+            .EnableSensitiveDataLogging());
+}
 
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    // Generate fake data and store in memory
+    using (var scope = app.Services.CreateScope())
+    {
+        var services = scope.ServiceProvider;
+        var dbContext = services.GetRequiredService<ApiDbContext>();
+
+        dbContext.Database.EnsureCreated(); // Ensure the database is created
+
+        FakeDataGenerator.GenerateFakeData(dbContext, 100, 50, 200); // Adjust the parameters as needed
+        dbContext.SaveChanges(); // Save changes to persist fake data in memory
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

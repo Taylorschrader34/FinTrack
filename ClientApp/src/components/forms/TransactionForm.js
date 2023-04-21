@@ -202,11 +202,13 @@ const TransactionForm = () => {
                       onChange={(e) => setSource(e.target.value)}
                     >
                       <option value="">Select source</option>
-                      {sourceOptions.map((src) => (
-                        <option key={src.id} value={src.id}>
-                          {src.name}
-                        </option>
-                      ))}
+                      {sourceOptions
+                        .sort((a, b) => a.name.localeCompare(b.name)) // Sort by name alphabetically
+                        .map((src) => (
+                          <option key={src.id} value={src.id}>
+                            {src.name}
+                          </option>
+                        ))}
                     </Form.Control>
                     <Button
                       variant="light"
@@ -249,11 +251,13 @@ const TransactionForm = () => {
                       onChange={(e) => setCategory(e.target.value)}
                     >
                       <option value="">Select category</option>
-                      {categoryOptions.map((c) => (
-                        <option key={c.id} value={c.id}>
-                          {c.name}
-                        </option>
-                      ))}
+                      {categoryOptions
+                        .sort((a, b) => a.name.localeCompare(b.name)) // Sort by name alphabetically
+                        .map((c) => (
+                          <option key={c.id} value={c.id}>
+                            {c.name}
+                          </option>
+                        ))}
                     </Form.Control>
                     <Button
                       variant="light"
