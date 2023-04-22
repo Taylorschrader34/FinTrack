@@ -2,6 +2,7 @@ using FinTrack.Models;
 
 public class TransactionOutputModel
 {
+    public int transactionId { get; set; }
     public DateTime TransactionDate { get; set; }
     public double Amount { get; set; }
     public string Description { get; set; }

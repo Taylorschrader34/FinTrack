@@ -20,7 +20,7 @@ if (environment.IsDevelopment())
 else
 {
     builder.Services.AddEntityFrameworkNpgsql()
-            .AddDbContext<ApiDbContext>(opt => 
+            .AddDbContext<ApiDbContext>(opt =>
             opt.UseNpgsql(builder.Configuration.GetConnectionString("finTrackDbConnection"))
             .EnableSensitiveDataLogging());
 }
@@ -37,7 +37,9 @@ if (app.Environment.IsDevelopment())
 
         dbContext.Database.EnsureCreated(); // Ensure the database is created
 
-        FakeDataGenerator.GenerateFakeData(dbContext, 100, 50, 200); // Adjust the parameters as needed
+        // Adjust the parameters as needed
+        FakeDataGenerator.GenerateFakeData(dbContext, 100, 50, 200);
+        //FakeDataGenerator.GenerateFakeData(dbContext, 0, 0, 0);
         dbContext.SaveChanges(); // Save changes to persist fake data in memory
     }
 }
@@ -58,6 +60,6 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller}/{action=Index}/{id?}");
 
-app.MapFallbackToFile("index.html");;
+app.MapFallbackToFile("index.html");
 
 app.Run();
