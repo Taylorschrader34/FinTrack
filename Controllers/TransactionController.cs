@@ -128,6 +128,7 @@ public class TransactionController : ControllerBase
 
         foreach(Transaction transaction in transactions){
             transactionOutputList.Add(new TransactionOutputModel(){
+                transactionId = transaction.Id,
                 TransactionDate = transaction.TransactionDate,
                 Amount = transaction.Amount,
                 Description = transaction.Description,
