@@ -37,7 +37,6 @@ const ManageTransactions = () => {
     try {
       const response = await fetch("/transaction/GetAllTransactions");
       const data = await response.json();
-      console.log(data);
       setTransactions(data);
     } catch (error) {
       console.error("Failed to fetch transactions:", error);
@@ -98,9 +97,9 @@ const ManageTransactions = () => {
 
   // Handler to open the modal for editing a transaction
   const handleEditTransaction = (transaction) => {
-    // setSelectedTransaction(transaction);
-    // setShowModal(true);
-    console.log("Editing transaction with ID:", transaction.transactionId);
+    console.log(transaction);
+    setSelectedTransaction(transaction);
+    setShowModal(true);
   };
 
   // Handler to delete a transaction

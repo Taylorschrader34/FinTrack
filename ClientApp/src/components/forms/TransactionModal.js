@@ -16,17 +16,15 @@ import {
 const { StringType, NumberType, DateType } = Schema.Types;
 const model = Schema.Model({
   amount: NumberType()
-    .min(0.01, "Amount must be greate than zero.")
     .isRequired("Amount is required."),
-  sourcePicker: NumberType()
-    .isInteger("Must be a valid id."),
+    // .check((value) => value !== 0, "Amount must not be equal to zero."),
+  sourcePicker: NumberType().isInteger("Must be a valid id."),
   sourceName: StringType().rangeLength(
     2,
     250,
     "The number of characters can only be between 2 and 250"
   ),
-  categoryPicker: NumberType()
-    .isInteger("Must be a valid id."),
+  categoryPicker: NumberType().isInteger("Must be a valid id."),
   categoryName: StringType().rangeLength(
     2,
     250,
@@ -36,6 +34,7 @@ const model = Schema.Model({
 });
 
 const defaultFormValue = {
+  transactionId: 0,
   amount: 0,
   sourcePicker: 0,
   sourceName: "",
@@ -50,21 +49,7 @@ const defaultFormValue = {
 const TransactionModal = ({ showModal, transaction, onClose }) => {
   const formRef = React.useRef();
   const [formError, setFormError] = React.useState({});
-  const [formValue, setFormValue] = React.useState(
-    transaction
-      ? {
-          amount: transaction.Amount,
-          sourcePicker: transaction.SourceId,
-          sourceName: "",
-          sourceDescription: "",
-          categoryPicker: transaction.CategoryId,
-          categoryName: "",
-          categoryDescription: "",
-          description: transaction.description,
-          datePicker: transaction.date,
-        }
-      : defaultFormValue
-  );
+  const [formValue, setFormValue] = React.useState(defaultFormValue);
 
   const [showNewSourceInput, setShowNewSourceInput] = useState(false);
   const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
@@ -83,6 +68,7 @@ const TransactionModal = ({ showModal, transaction, onClose }) => {
     if (showModal) {
       getAllSources();
       getAllCategories();
+      updateFormValues();
     }
   }, [showModal]);
 
@@ -106,9 +92,34 @@ const TransactionModal = ({ showModal, transaction, onClose }) => {
     }
   };
 
+  const updateFormValues = async () => {
+    if (transaction) {
+      setFormValue(
+        transaction
+          ? {
+              transactionId: transaction.transactionId,
+              amount: transaction.amount,
+              sourcePicker: transaction.sourceId,
+              sourceName: "",
+              sourceDescription: "",
+              categoryPicker: transaction.categoryId,
+              categoryName: "",
+              categoryDescription: "",
+              description: transaction.description,
+              datePicker: new Date(transaction.transactionDate),
+            }
+          : defaultFormValue
+      );
+      setIsIncome(transaction.amount > 0);
+    }
+  };
+
   const handleSubmit = () => {
     if (!formRef.current.check()) {
       toaster.push(<Message type="error">Error</Message>);
+      return;
+    }else if(formValue.amount == 0){
+      toaster.push(<Message type="error">Amount must be not zero.</Message>);
       return;
     }
 
@@ -142,8 +153,11 @@ const TransactionModal = ({ showModal, transaction, onClose }) => {
       tCategory.id = formValue.categoryPicker;
     }
 
-    const transaction = {
-      Amount: isIncome ? formValue.amount : -formValue.amount,
+    const transInput = {
+      TransactionId: transaction?.transactionId,
+      Amount: isIncome
+        ? Math.abs(formValue.amount)
+        : -Math.abs(formValue.amount),
       Source: tSource,
       Category: tCategory,
       Description: formValue.description,
@@ -156,7 +170,7 @@ const TransactionModal = ({ showModal, transaction, onClose }) => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(transaction),
+      body: JSON.stringify(transInput),
     })
       .then((response) => {
         if (response.ok) {
@@ -246,6 +260,13 @@ const TransactionModal = ({ showModal, transaction, onClose }) => {
                 data={sourceOptions}
                 labelKey="name" // Display source.name as the label
                 valueKey="id" // Set source.id as the value
+                defaultValue={
+                  transaction?.sourceId
+                    ? sourceOptions.find(
+                        (option) => option.id === transaction.sourceId
+                      )
+                    : undefined
+                }
               />
             </Form.Group>
           ) : (
@@ -271,6 +292,13 @@ const TransactionModal = ({ showModal, transaction, onClose }) => {
                 data={categoryOptions}
                 labelKey="name" // Display category.name as the label
                 valueKey="id" // Set category.id as the value
+                defaultValue={
+                  transaction?.categoryId
+                    ? sourceOptions.find(
+                        (option) => option.id === transaction.categoryId
+                      )
+                    : undefined
+                }
               />
             </Form.Group>
           ) : (
@@ -308,7 +336,12 @@ const TransactionModal = ({ showModal, transaction, onClose }) => {
         <Button onClick={handleSubmit} appearance="primary">
           Save
         </Button>
-        <Checkbox onChange={handleCheckboxChange}>Income</Checkbox>
+        <Checkbox
+          onChange={handleCheckboxChange}
+          defaultChecked={transaction?.amount > 0}
+        >
+          Income
+        </Checkbox>
       </Modal.Footer>
     </Modal>
   );

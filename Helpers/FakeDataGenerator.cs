@@ -46,7 +46,7 @@ public class FakeDataGenerator
             .RuleFor(t => t.TransactionDate, f => f.Date.Past())
             .RuleFor(t => t.SourceId, f => f.PickRandom(sources).Id)
             .RuleFor(t => t.CategoryId, f => f.PickRandom(categories).Id)
-            .RuleFor(t => t.Amount, f => double.Parse(f.Commerce.Price()))
+            .RuleFor(t => t.Amount, f => double.Parse(f.Commerce.Price(-1000, 1000, 2)))
             .RuleFor(t => t.Description, f => f.Lorem.Sentence())
             .RuleFor(t => t.Source, (f, t) => f.PickRandom(sources))
             .RuleFor(t => t.Category, (f, t) => f.PickRandom(categories));
