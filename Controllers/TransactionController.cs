@@ -30,63 +30,18 @@ public class TransactionController : ControllerBase
         try
         {
 
-            // Check if passing in existing Source
-            Source existingSource = SourceHelper.GetExistingSource(_dbContext, transactionInput.Source);
+            Source source = SourceHelper.GetExistingOrCreateNewSoure(_dbContext, transactionInput);
 
-            // Check if passing in existing Category
-            Category existingCategory = CategoryHelper.GetExistingCategory(_dbContext, transactionInput.Category);
+            Category category = CategoryHelper.GetExistingOrCreateNewCategory(_dbContext, transactionInput);
 
-            //Create new Source if needed
-            Source newSource = new Source();
-            if (existingSource == null)
-            {
-                newSource.Name = transactionInput.Source.Name;
-                newSource.Description = transactionInput.Source.Description;
+            Transaction transaction = TransactionHelper.UpdateOrCreateNewTransaction(_dbContext, transactionInput, source, category);
 
-                _dbContext.Source.Add(newSource);
-            }
-
-            //Create new Category if needed
-            Category newCategory = new Category();
-            if (existingCategory == null)
-            {
-                newCategory.Name = transactionInput.Category.Name;
-                newCategory.Description = transactionInput.Category.Description;
-
-                _dbContext.Category.Add(newCategory);
-            }
-
-            //create transaction
-            var transaction = new Transaction
-            {
-                TransactionDate = new DateTime(
-                    transactionInput.TransactionDate.Year,
-                    transactionInput.TransactionDate.Month,
-                    transactionInput.TransactionDate.Day,
-                    0, 0, 0, DateTimeKind.Unspecified)
-                    .ToUniversalTime(),
-                Amount = transactionInput.Amount,
-                Description = transactionInput.Description,
-                Source = existingSource ?? newSource,
-                Category = existingCategory ?? newCategory
-            };
-
-            _dbContext.Transaction.Add(transaction);
             _dbContext.SaveChanges();
-
-            string successMessage =
-                newSource != null && newCategory != null ?
-                "Transaction created successfully with new source and category." :
-                newSource != null ?
-                "Transaction created successfully with new source." :
-                newCategory != null ?
-                "Transaction created successfully with new category." :
-                "Transaction created successfully.";
 
             // Create the response object with the transaction and success message
             var response = new
             {
-                Message = successMessage,
+                Message = "Transaction created successfully.",
                 Transaction = transaction
             };
 
@@ -106,15 +61,6 @@ public class TransactionController : ControllerBase
         }
     }
 
-    // Create a new Transaction
-    // [HttpPost("CreateTransaction")]
-    // public async Task<Transaction> CreateTransaction([FromBody] Transaction Transaction)
-    // {
-    //     _dbContext.Transaction.Add(Transaction);
-    //     await _dbContext.SaveChangesAsync();
-    //     return Transaction;
-    // }
-
     // Read all Transactions
     [HttpGet("GetAllTransactions")]
     public async Task<List<TransactionOutputModel>> GetAllTransactions()
@@ -126,8 +72,10 @@ public class TransactionController : ControllerBase
 
         List<TransactionOutputModel> transactionOutputList = new List<TransactionOutputModel>();
 
-        foreach(Transaction transaction in transactions){
-            transactionOutputList.Add(new TransactionOutputModel(){
+        foreach (Transaction transaction in transactions)
+        {
+            transactionOutputList.Add(new TransactionOutputModel()
+            {
                 transactionId = transaction.Id,
                 TransactionDate = transaction.TransactionDate,
                 Amount = transaction.Amount,
@@ -141,6 +89,15 @@ public class TransactionController : ControllerBase
 
         return transactionOutputList;
     }
+
+    // Create a new Transaction
+    // [HttpPost("CreateTransaction")]
+    // public async Task<Transaction> CreateTransaction([FromBody] Transaction Transaction)
+    // {
+    //     _dbContext.Transaction.Add(Transaction);
+    //     await _dbContext.SaveChangesAsync();
+    //     return Transaction;
+    // }
 
     // Read a single Transaction by Id
     // [HttpGet("GetTransactionById")]

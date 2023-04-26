@@ -5,21 +5,51 @@ using FinTrack.Models;
 namespace FinTrack.Helpers;
 public class CategoryHelper
 {
-    public static Category GetExistingCategory(ApiDbContext dbContext, Category category)
+
+    public static Category GetExistingOrCreateNewCategory(ApiDbContext _dbContext, TransactionInputModel transactionInput)
+    {
+
+        Category category = CategoryHelper.GetExistingCategory(_dbContext, transactionInput.Category);
+
+        //Create new Category if needed
+        if (category == null)
+        {
+            category = new Category();
+            category.Name = transactionInput.Category.Name;
+            category.Description = transactionInput.Category.Description;
+
+            _dbContext.Category.Add(category);
+        }
+
+        return category;
+    }
+
+    public static Category GetExistingCategory(ApiDbContext _dbContext, Category category)
     {
         Category existingCategory = null;
 
-        // Check if passing in existing source
+        // Check if passing in existing Category
         if (category.Id != 0)
         {
-            existingCategory = dbContext.Category.FirstOrDefault(c => c.Id == category.Id);
+            existingCategory = _dbContext.Category.FirstOrDefault(s => s.Id == category.Id);
         }
         else
         {
-            // Check if the source name already exists in the database
-            existingCategory = dbContext.Category.FirstOrDefault(c => c.Name.Equals(category.Name));
+            // Check if the category name already exists in the database
+            existingCategory = _dbContext.Category.FirstOrDefault(s => s.Name.Equals(category.Name));
         }
 
         return existingCategory;
+    }
+
+    public static Category CreateNewCategory(ApiDbContext _dbContext, TransactionInputModel transactionInput)
+    {
+        Category newCategory = new Category();
+        newCategory.Name = transactionInput.Category.Name;
+        newCategory.Description = transactionInput.Category.Description;
+
+        _dbContext.Category.Add(newCategory);
+
+        return newCategory;
     }
 }

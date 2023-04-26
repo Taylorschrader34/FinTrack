@@ -5,8 +5,6 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 
-import TransactionForm from "../forms/TransactionForm";
-
 const Home = () => {
 
   const buttonStyle = {
@@ -16,9 +14,6 @@ const Home = () => {
   return (
     <>
       <Container>
-        <Row className="justify-content-md-center mb-5">
-          <TransactionForm />
-        </Row>
         <Row className="justify-content-md-center mb-5">
           <Col xs lg="2">
             <Link to={"/Reports"} style={buttonStyle}>
