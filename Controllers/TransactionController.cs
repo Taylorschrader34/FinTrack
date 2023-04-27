@@ -90,6 +90,37 @@ public class TransactionController : ControllerBase
         return transactionOutputList;
     }
 
+    // Read Transaction between a date range
+    [HttpGet("GetTransactionsByDateRange")]
+    public async Task<List<TransactionOutputModel>> GetTransactionsByDateRange(DateTime startDate, DateTime endDate)
+    {
+        var transactions = await _dbContext.Transaction
+            .Include(t => t.Source) // Include the Source entity
+            .Include(t => t.Category) // Include the Category entity
+            .Where(t => t.TransactionDate >= startDate && t.TransactionDate <= endDate)
+            .ToListAsync();
+
+        List<TransactionOutputModel> transactionOutputList = new List<TransactionOutputModel>();
+
+        foreach (Transaction transaction in transactions)
+        {
+            transactionOutputList.Add(new TransactionOutputModel()
+            {
+                transactionId = transaction.Id,
+                TransactionDate = transaction.TransactionDate,
+                Amount = transaction.Amount,
+                Description = transaction.Description,
+                SourceId = transaction.SourceId,
+                SourceName = transaction.Source.Name,
+                CategoryId = transaction.CategoryId,
+                CategoryName = transaction.Category.Name
+            });
+        }
+
+        return transactionOutputList;
+    }
+
+
     //Delete an existing Transaction
     [HttpDelete("DeleteTransaction/{id}")]
     public async Task<IActionResult> DeleteTransaction(int id)
@@ -103,6 +134,5 @@ public class TransactionController : ControllerBase
         await _dbContext.SaveChangesAsync();
         return Ok();
     }
-
 
 }
