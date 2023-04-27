@@ -15,9 +15,8 @@ import {
 
 const { StringType, NumberType, DateType } = Schema.Types;
 const transModel = Schema.Model({
-  amount: NumberType()
-    .isRequired("Amount is required."),
-    // .check((value) => value !== 0, "Amount must not be equal to zero."),
+  amount: NumberType().isRequired("Amount is required."),
+  // .check((value) => value !== 0, "Amount must not be equal to zero."),
   sourcePicker: NumberType().isInteger("Must be a valid id."),
   sourceName: StringType().rangeLength(
     2,
@@ -118,7 +117,7 @@ const TransactionModal = ({ showModal, transaction, onClose }) => {
     if (!formRef.current.check()) {
       toaster.push(<Message type="error">Error</Message>);
       return;
-    }else if(formValue.amount == 0){
+    } else if (formValue.amount == 0) {
       toaster.push(<Message type="error">Amount must be not zero.</Message>);
       return;
     }
@@ -176,8 +175,6 @@ const TransactionModal = ({ showModal, transaction, onClose }) => {
         if (response.ok) {
           // Handle successful transaction creation
           response.json().then((data) => {
-            console.log("Transaction created:", data.Message);
-            console.log("Transaction data:", data.Transaction);
             toaster.push(<Message type="success">Success</Message>);
             handleClose();
           });
@@ -185,7 +182,9 @@ const TransactionModal = ({ showModal, transaction, onClose }) => {
           // Handle error response
           toaster.push(
             <Message type="error">
-              {"Error creating transaction:" + response.status}
+              {`Error ${
+                transaction?.transactionId == 0 ? "creating" : "updating"
+              } transaction: ${response.status}`}
             </Message>
           );
         }
@@ -193,7 +192,9 @@ const TransactionModal = ({ showModal, transaction, onClose }) => {
       .catch((error) =>
         toaster.push(
           <Message type="error">
-            {"Error creating transaction:" + error}
+            {`Error ${
+              transaction?.transactionId == 0 ? "creating" : "updating"
+            } transaction: ${error}`}
           </Message>
         )
       );

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "rsuite/dist/rsuite.min.css";
-import { format } from "date-fns";
+import { format, subMonths } from "date-fns";
 
 import {
   Table,
@@ -9,7 +9,9 @@ import {
   Button,
   IconButton,
   FlexboxGrid,
+  DateRangePicker,
 } from "rsuite";
+
 import TrashIcon from "@rsuite/icons/Trash";
 import EditIcon from "@rsuite/icons/Edit";
 import TransactionModal from "../forms/TransactionModal";
@@ -18,22 +20,39 @@ import DeleteTransactionModal from "../forms/DeleteTransactionModal";
 const { Column, HeaderCell, Cell } = Table;
 
 const ManageTransactions = () => {
-  const [transactions, setTransactions] = useState([]);
+  const [selectedDateRange, setSelectedDateRange] = useState({
+    startDate: subMonths(new Date(), 1),
+    endDate: new Date(),
+  });
+
+  const [transactions, setTransactions] = useState(new Array());
+  const [sortedTransactions, setSortedTransactions] = useState(new Array());
+  const [slicedTransactions, setSlicedTransactions] = useState(new Array());
   const [showTransModal, setShowTransModal] = useState(false);
   const [showDelTransModal, setShowDelTransModal] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
 
   const [currentPage, setCurrentPage] = useState(1); // Current page of the pagination
   const [pageSize, setPageSize] = useState(10); // Number of items per page
+  const [totalPages, setTotalPages] = useState(0); // Number total pages
 
   const [sortColumn, setSortColumn] = useState(null); // Column used for sorting
   const [sortType, setSortType] = useState(null); // Type of sorting (asc, desc)
 
   // Fetch transactions from API
   useEffect(() => {
-    // Fetch transactions and setTransactions with the retrieved data
-    getAllTransactions();
-  }, []);
+    fetchTransactions();
+  }, [selectedDateRange]);
+
+  // Fetch transactions and setTransactions with the retrieved data
+  const fetchTransactions = () => {
+    selectedDateRange.startDate && selectedDateRange.endDate
+      ? getAllTransactionsByDateRange(
+          selectedDateRange.startDate,
+          selectedDateRange.endDate
+        )
+      : getAllTransactions();
+  };
 
   const getAllTransactions = async () => {
     try {
@@ -43,6 +62,36 @@ const ManageTransactions = () => {
     } catch (error) {
       console.error("Failed to fetch transactions:", error);
     }
+  };
+
+  const getAllTransactionsByDateRange = async (startDate, endDate) => {
+    const startDateInput = startDate.toISOString();
+    const endDateInput = endDate.toISOString();
+
+    try {
+      const response = await fetch(
+        `/transaction/GetTransactionsByDateRange?startDate=${startDateInput}&endDate=${endDateInput}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = await response.json();
+      setTransactions(data);
+    } catch (error) {
+      console.error("Failed to fetch transactions:", error);
+    }
+  };
+
+  const handleRangeChange = (range) => {
+    setSelectedDateRange(
+      range
+        ? { startDate: range[0], endDate: range[1] }
+        : { startDate: null, endDate: null }
+    );
   };
 
   // Handle page change
@@ -63,33 +112,43 @@ const ManageTransactions = () => {
   };
 
   // Sort data based on sort column and sort type
-  const sortedTransactions = transactions.sort((a, b) => {
-    const sortColumnKey = sortColumn || "id";
-    const sortTypeDirection = sortType === "asc" ? 1 : -1;
-    const valA = a[sortColumnKey];
-    const valB = b[sortColumnKey];
+  useEffect(() => {
+    const newSortedTransactions = Array.isArray(transactions)
+      ? transactions.sort((a, b) => {
+          const sortColumnKey = sortColumn || "id";
+          const sortTypeDirection = sortType === "asc" ? 1 : -1;
+          const valA = a[sortColumnKey];
+          const valB = b[sortColumnKey];
 
-    if (valA === valB) {
-      return 0;
-    } else if (valA === null || valA === undefined) {
-      return sortTypeDirection;
-    } else if (valB === null || valB === undefined) {
-      return -sortTypeDirection;
-    } else if (typeof valA === "string" && typeof valB === "string") {
-      return valA.localeCompare(valB) * sortTypeDirection;
-    } else {
-      return (valA - valB) * sortTypeDirection;
-    }
-  });
+          if (valA === valB) {
+            return 0;
+          } else if (valA === null || valA === undefined) {
+            return sortTypeDirection;
+          } else if (valB === null || valB === undefined) {
+            return -sortTypeDirection;
+          } else if (typeof valA === "string" && typeof valB === "string") {
+            return valA.localeCompare(valB) * sortTypeDirection;
+          } else {
+            return (valA - valB) * sortTypeDirection;
+          }
+        })
+      : [];
 
+    setSortedTransactions([...newSortedTransactions]);
+  }, [transactions, sortColumn, sortType]);
+
+  // Sort data based on sort column and sort type
   // Calculate total number of pages
-  const totalPages = Math.ceil(sortedTransactions.length / pageSize);
+  useEffect(() => {
+    setSlicedTransactions(
+      sortedTransactions.slice(
+        (currentPage - 1) * pageSize,
+        currentPage * pageSize
+      )
+    );
 
-  // Slice data based on current page and page size
-  const slicedTransactions = sortedTransactions.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
+    setTotalPages(Math.ceil(sortedTransactions.length / pageSize));
+  }, [sortedTransactions, currentPage]);
 
   // Handler to open the modal for adding a new transaction
   const handleAddTransaction = () => {
@@ -112,7 +171,7 @@ const ManageTransactions = () => {
   const handleModalClose = () => {
     setShowTransModal(false);
     setShowDelTransModal(false);
-    getAllTransactions();
+    fetchTransactions();
   };
 
   return (
@@ -131,6 +190,13 @@ const ManageTransactions = () => {
           }
         </FlexboxGrid.Item>
       </FlexboxGrid>
+
+      <DateRangePicker
+        value={[selectedDateRange.startDate, selectedDateRange.endDate]}
+        onChange={(value) => handleRangeChange(value)}
+        defaultValue={[subMonths(new Date(), 1), new Date()]}
+      />
+
       <Table
         data={slicedTransactions}
         height={400}
