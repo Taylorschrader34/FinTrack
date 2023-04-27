@@ -90,37 +90,19 @@ public class TransactionController : ControllerBase
         return transactionOutputList;
     }
 
-    // Create a new Transaction
-    // [HttpPost("CreateTransaction")]
-    // public async Task<Transaction> CreateTransaction([FromBody] Transaction Transaction)
-    // {
-    //     _dbContext.Transaction.Add(Transaction);
-    //     await _dbContext.SaveChangesAsync();
-    //     return Transaction;
-    // }
+    //Delete an existing Transaction
+    [HttpDelete("DeleteTransaction/{id}")]
+    public async Task<IActionResult> DeleteTransaction(int id)
+    {
+        var Transaction = await _dbContext.Transaction.FindAsync(id);
+        if (Transaction == null)
+        {
+            return NotFound("Transaction not found");
+        }
+        _dbContext.Transaction.Remove(Transaction);
+        await _dbContext.SaveChangesAsync();
+        return Ok();
+    }
 
-    // Read a single Transaction by Id
-    // [HttpGet("GetTransactionById")]
-    // public async Task<Transaction> GetTransactionById(int id)
-    // {
-    //     return await _dbContext.Transaction.FindAsync(id);
-    // }
-
-    // Update an existing Transaction
-    // [HttpPut("UpdateTransaction")]
-    // public async Task UpdateTransaction([FromBody] Transaction Transaction)
-    // {
-    //     _dbContext.Entry(Transaction).State = EntityState.Modified;
-    //     await _dbContext.SaveChangesAsync();
-    // }
-
-    // Delete an existing Transaction
-    // [HttpDelete("DeleteTransaction")]
-    // public async Task DeleteTransaction(int id)
-    // {
-    //     var Transaction = await _dbContext.Transaction.FindAsync(id);
-    //     _dbContext.Transaction.Remove(Transaction);
-    //     await _dbContext.SaveChangesAsync();
-    // }
 
 }

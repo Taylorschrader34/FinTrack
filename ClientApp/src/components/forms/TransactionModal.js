@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Modal,
   Form,
@@ -14,7 +14,7 @@ import {
 } from "rsuite";
 
 const { StringType, NumberType, DateType } = Schema.Types;
-const model = Schema.Model({
+const transModel = Schema.Model({
   amount: NumberType()
     .isRequired("Amount is required."),
     // .check((value) => value !== 0, "Amount must not be equal to zero."),
@@ -47,9 +47,9 @@ const defaultFormValue = {
 };
 
 const TransactionModal = ({ showModal, transaction, onClose }) => {
-  const formRef = React.useRef();
-  const [formError, setFormError] = React.useState({});
-  const [formValue, setFormValue] = React.useState(defaultFormValue);
+  const formRef = useRef();
+  const [formError, setFormError] = useState({});
+  const [formValue, setFormValue] = useState(defaultFormValue);
 
   const [showNewSourceInput, setShowNewSourceInput] = useState(false);
   const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
@@ -220,7 +220,7 @@ const TransactionModal = ({ showModal, transaction, onClose }) => {
           onChange={setFormValue}
           onCheck={setFormError}
           formValue={formValue}
-          model={model}
+          model={transModel}
         >
           <ButtonToolbar>
             <Button onClick={() => setFormValue(defaultFormValue)}>

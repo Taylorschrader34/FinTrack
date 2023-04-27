@@ -13,12 +13,14 @@ import {
 import TrashIcon from "@rsuite/icons/Trash";
 import EditIcon from "@rsuite/icons/Edit";
 import TransactionModal from "../forms/TransactionModal";
+import DeleteTransactionModal from "../forms/DeleteTransactionModal";
 
 const { Column, HeaderCell, Cell } = Table;
 
 const ManageTransactions = () => {
   const [transactions, setTransactions] = useState([]);
-  const [showModal, setShowModal] = useState(false);
+  const [showTransModal, setShowTransModal] = useState(false);
+  const [showDelTransModal, setShowDelTransModal] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
 
   const [currentPage, setCurrentPage] = useState(1); // Current page of the pagination
@@ -92,24 +94,24 @@ const ManageTransactions = () => {
   // Handler to open the modal for adding a new transaction
   const handleAddTransaction = () => {
     setSelectedTransaction(null);
-    setShowModal(true);
+    setShowTransModal(true);
   };
 
   // Handler to open the modal for editing a transaction
   const handleEditTransaction = (transaction) => {
-    console.log(transaction);
     setSelectedTransaction(transaction);
-    setShowModal(true);
+    setShowTransModal(true);
   };
 
   // Handler to delete a transaction
   const handleDeleteTransaction = (transaction) => {
-    // Implement delete transaction logic here
-    console.log("Deleting transaction with ID:", transaction.transactionId);
+    setSelectedTransaction(transaction);
+    setShowDelTransModal(true);
   };
 
   const handleModalClose = () => {
-    setShowModal(false);
+    setShowTransModal(false);
+    setShowDelTransModal(false);
     getAllTransactions();
   };
 
@@ -168,7 +170,7 @@ const ManageTransactions = () => {
         <Column width={100} fixed="right" align="center" resizable>
           <HeaderCell>Edit/Delete</HeaderCell>
           <Cell>
-            {(rowData ) => (
+            {(rowData) => (
               <ButtonToolbar>
                 <IconButton
                   icon={<EditIcon />}
@@ -203,7 +205,12 @@ const ManageTransactions = () => {
         onSelect={handlePageChange}
       />
       <TransactionModal
-        showModal={showModal}
+        showModal={showTransModal}
+        transaction={selectedTransaction}
+        onClose={() => handleModalClose()}
+      />
+      <DeleteTransactionModal
+        showModal={showDelTransModal}
         transaction={selectedTransaction}
         onClose={() => handleModalClose()}
       />
