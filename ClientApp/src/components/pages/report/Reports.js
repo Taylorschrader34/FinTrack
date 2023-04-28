@@ -1,20 +1,17 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Col, Row, Nav, NavItem, NavLink } from "reactstrap";
 
-import "./Reports.css";
-import MonthlyReport from "./reports/MonthlyReport";
+import MonthlyReports from "./reports/MonthlyReports";
 import YearlyReport from "./reports/YearlyReport";
 
-const Reports = ({ reportType }) => {
-  const buttonStyle = {
-    textDecoration: "none",
-  };
+const Reports = () => {
+  const [reportType, setReportType] = useState("monthly");
 
   let reportToRender;
 
   switch (reportType) {
     case "monthly":
-      reportToRender = <MonthlyReport />;
+      reportToRender = <MonthlyReports />;
       break;
     case "yearly":
       reportToRender = <YearlyReport />;
@@ -23,21 +20,50 @@ const Reports = ({ reportType }) => {
       reportToRender = <div>Select a Report</div>;
   }
 
+  const handleReportTypeChange = (type) => {
+    setReportType(type);
+  };
+
   return (
-    <div className="reportsContainer">
-      <div
-        className="reportsSidenav"
-        style={{ display: "flex", flexDirection: "column" }}
-      >
-        <Link to={"/Reports/Monthly"} style={buttonStyle}>
-          Monthly
-        </Link>
-        <Link to={"/Reports/Yearly"} style={buttonStyle}>
-          Yearly
-        </Link>
-      </div>
-      <div className="reportsBody">{reportToRender}</div>
-    </div>
+    <Row className="reportsContainer">
+      <Col md={2} className="reportsSidenav">
+        <Nav
+          vertical
+          className="reportsSidenav"
+          style={{ backgroundColor: "black" }}
+        >
+          <NavItem>
+            <NavLink
+              onClick={() => handleReportTypeChange("monthly")}
+              active={reportType === "monthly"}
+              style={{
+                color: "white",
+                textDecoration: "none",
+                fontWeight: reportType === "monthly" ? "bold" : "normal",
+              }}
+            >
+              Monthly
+            </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink
+              onClick={() => handleReportTypeChange("yearly")}
+              active={reportType === "yearly"}
+              style={{
+                color: "white",
+                textDecoration: "none",
+                fontWeight: reportType === "yearly" ? "bold" : "normal",
+              }}
+            >
+              Yearly
+            </NavLink>
+          </NavItem>
+        </Nav>
+      </Col>
+      <Col md={10} className="reportsBody">
+        {reportToRender}
+      </Col>
+    </Row>
   );
 };
 
