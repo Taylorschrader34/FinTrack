@@ -26,6 +26,8 @@ const MonthlyReports = () => {
       incomeExpenseSelection
     );
 
+    console.log(dataByCatOrSource);
+
     setDataForChart(dataByCatOrSource);
   }, [transactions, catSourceSelection, incomeExpenseSelection]);
 
@@ -75,18 +77,38 @@ const MonthlyReports = () => {
       );
     }
 
-    const categories = {};
-    filteredTransactions.forEach((transaction) => {
-      const category = transaction.category.name;
-      if (!categories[category]) {
-        categories[category] = 0;
-      }
-      categories[category] += Math.abs(transaction.amount);
-    });
+    console.log(groupBy);
+
     const result = [];
-    for (const [category, amount] of Object.entries(categories)) {
-      result.push({ category, amount });
+
+    if (groupBy == "category") {
+      const categories = {};
+
+      filteredTransactions.forEach((transaction) => {
+        const category = transaction.category.name;
+        if (!categories[category]) {
+          categories[category] = 0;
+        }
+        categories[category] += Math.abs(transaction.amount);
+      });
+      for (const [category, amount] of Object.entries(categories)) {
+        result.push({ category, amount });
+      }
+    } else {
+      const sources = {};
+
+      filteredTransactions.forEach((transaction) => {
+        const source = transaction.source.name;
+        if (!sources[source]) {
+          sources[source] = 0;
+        }
+        sources[source] += Math.abs(transaction.amount);
+      });
+      for (const [source, amount] of Object.entries(sources)) {
+        result.push({ source, amount });
+      }
     }
+
     return result;
   };
 
