@@ -38,8 +38,8 @@ const DeleteTransactionModal = ({ showModal, transaction, onClose }) => {
         transaction
           ? {
               amount: transaction.amount,
-              sourceName: transaction.sourceName,
-              categoryName: transaction.categoryName,
+              sourceName: transaction.source.name,
+              categoryName: transaction.category.name,
               description: transaction.description,
               transactionDate: new Date(transaction.transactionDate),
             }
