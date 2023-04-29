@@ -45,14 +45,8 @@ public class TransactionController : ControllerBase
                 Transaction = transaction
             };
 
-            var jsonOptions = new JsonSerializerOptions
-            {
-                ReferenceHandler = ReferenceHandler.Preserve // Use ReferenceHandler.Preserve to handle object cycles
-            };
-            var jsonResponse = JsonSerializer.Serialize(response, jsonOptions);
-
             // Return the response in the Ok response
-            return Ok(jsonResponse);
+            return Ok(response);
         }
         catch (Exception ex)
         {
@@ -63,36 +57,20 @@ public class TransactionController : ControllerBase
 
     // Read all Transactions
     [HttpGet("GetAllTransactions")]
-    public async Task<List<TransactionOutputModel>> GetAllTransactions()
+    public async Task<List<Transaction>> GetAllTransactions()
     {
         var transactions = await _dbContext.Transaction
             .Include(t => t.Source) // Include the Source entity
             .Include(t => t.Category) // Include the Category entity
+            .Include(t => t.Refunds) // Include the Refund entity
             .ToListAsync();
 
-        List<TransactionOutputModel> transactionOutputList = new List<TransactionOutputModel>();
-
-        foreach (Transaction transaction in transactions)
-        {
-            transactionOutputList.Add(new TransactionOutputModel()
-            {
-                transactionId = transaction.Id,
-                TransactionDate = transaction.TransactionDate,
-                Amount = transaction.Amount,
-                Description = transaction.Description,
-                SourceId = transaction.SourceId,
-                SourceName = transaction.Source.Name,
-                CategoryId = transaction.CategoryId,
-                CategoryName = transaction.Category.Name
-            });
-        }
-
-        return transactionOutputList;
+        return transactions;
     }
 
     // Read Transaction between a date range
     [HttpGet("GetTransactionsByDateRange")]
-    public async Task<List<TransactionOutputModel>> GetTransactionsByDateRange(DateTime startDate, DateTime endDate)
+    public async Task<List<Transaction>> GetTransactionsByDateRange(DateTime startDate, DateTime endDate)
     {
         var transactions = await _dbContext.Transaction
             .Include(t => t.Source) // Include the Source entity
@@ -100,26 +78,25 @@ public class TransactionController : ControllerBase
             .Where(t => t.TransactionDate >= startDate && t.TransactionDate <= endDate)
             .ToListAsync();
 
-        List<TransactionOutputModel> transactionOutputList = new List<TransactionOutputModel>();
-
-        foreach (Transaction transaction in transactions)
-        {
-            transactionOutputList.Add(new TransactionOutputModel()
-            {
-                transactionId = transaction.Id,
-                TransactionDate = transaction.TransactionDate,
-                Amount = transaction.Amount,
-                Description = transaction.Description,
-                SourceId = transaction.SourceId,
-                SourceName = transaction.Source.Name,
-                CategoryId = transaction.CategoryId,
-                CategoryName = transaction.Category.Name
-            });
-        }
-
-        return transactionOutputList;
+        return transactions;
     }
 
+    //Get an existing Transaction by Id
+    [HttpGet("GetTransactionById/{id}")]
+    public async Task<Transaction> GetTransactionById(int id)
+    {
+        var transaction = await _dbContext.Transaction
+            .Include(t => t.Source)
+            .Include(t => t.Category)
+            .Include(t => t.Refunds)
+            .FirstOrDefaultAsync(t => t.Id == id);
+        if (transaction == null)
+        {
+            return new Transaction();
+        }
+
+        return transaction;
+    }
 
     //Delete an existing Transaction
     [HttpDelete("DeleteTransaction/{id}")]

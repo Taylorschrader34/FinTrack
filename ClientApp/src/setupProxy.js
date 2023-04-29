@@ -8,6 +8,7 @@ const context =  [
   "/category",
   "/transaction",
   "/source",
+  "/refund",
 ];
 
 module.exports = function(app) {

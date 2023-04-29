@@ -4,7 +4,7 @@ import { DatePicker, Dropdown } from "rsuite";
 import { Container, Row, Col } from "reactstrap";
 
 const MonthlyReports = () => {
-  const [transactions, setTransactions] = useState(transactionsTest);
+  const [transactions, setTransactions] = useState([]);
   const [monthSelection, setMonthSelection] = useState(new Date());
   const [catSourceSelection, setCatSourceSelection] = useState("category");
   const [incomeExpenseSelection, setIncomeExpenseSelection] =
@@ -64,9 +64,6 @@ const MonthlyReports = () => {
   };
 
   const groupTransactions = (transactions, groupBy, filterBy) => {
-    const groupKey = groupBy + "Name";
-    const groups = {};
-
     let filteredTransactions = null;
     if (filterBy === "income") {
       filteredTransactions = transactions.filter(
@@ -78,19 +75,19 @@ const MonthlyReports = () => {
       );
     }
 
+    const categories = {};
     filteredTransactions.forEach((transaction) => {
-      const key = transaction[groupKey];
-      if (groups[key]) {
-        groups[key] += transaction.amount;
-      } else {
-        groups[key] = transaction.amount;
+      const category = transaction.category.name;
+      if (!categories[category]) {
+        categories[category] = 0;
       }
+      categories[category] += Math.abs(transaction.amount);
     });
-
-    return Object.keys(groups).map((key, index) => ({
-      [groupBy]: key,
-      amount: Math.abs(groups[key]),
-    }));
+    const result = [];
+    for (const [category, amount] of Object.entries(categories)) {
+      result.push({ category, amount });
+    }
+    return result;
   };
 
   return (

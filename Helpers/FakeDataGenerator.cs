@@ -10,7 +10,7 @@ public class FakeDataGenerator
     public static List<Category> GenerateCategories(int count)
     {
         var faker = new Faker<Category>()
-            .RuleFor(c => c.Id, f => f.UniqueIndex+100)
+            .RuleFor(c => c.Id, f => f.UniqueIndex + 100)
             .RuleFor(c => c.Name, f => f.Commerce.Categories(1).FirstOrDefault())
             .RuleFor(c => c.Description, f => f.Lorem.Sentence());
 
@@ -26,10 +26,10 @@ public class FakeDataGenerator
     public static List<Source> GenerateSources(int count)
     {
         var faker = new Faker<Source>()
-            .RuleFor(s => s.Id, f => f.UniqueIndex+100)
+            .RuleFor(s => s.Id, f => f.UniqueIndex + 100)
             .RuleFor(s => s.Name, f => f.Company.CompanyName())
             .RuleFor(s => s.Description, f => f.Lorem.Sentence());
-        
+
         var fakedResults = faker.Generate(count);
         var filteredFakedResults = fakedResults
             .GroupBy(s => s.Name)
@@ -42,14 +42,25 @@ public class FakeDataGenerator
     public static List<Transaction> GenerateTransactions(int count, List<Category> categories, List<Source> sources)
     {
         var faker = new Faker<Transaction>()
-            .RuleFor(t => t.Id, f => f.UniqueIndex+100)
+            .RuleFor(t => t.Id, f => f.UniqueIndex + 100)
             .RuleFor(t => t.TransactionDate, f => f.Date.Past())
             .RuleFor(t => t.SourceId, f => f.PickRandom(sources).Id)
             .RuleFor(t => t.CategoryId, f => f.PickRandom(categories).Id)
             .RuleFor(t => t.Amount, f => double.Parse(f.Commerce.Price(-1000, 1000, 2)))
             .RuleFor(t => t.Description, f => f.Lorem.Sentence())
             .RuleFor(t => t.Source, (f, t) => f.PickRandom(sources))
-            .RuleFor(t => t.Category, (f, t) => f.PickRandom(categories));
+            .RuleFor(t => t.Category, (f, t) => f.PickRandom(categories))
+            .RuleFor(t => t.Refunds, (f, t) =>
+            {
+                var numRefunds = f.Random.Int(0, 3);
+                var refundFaker = new Faker<Refund>()
+                    .RuleFor(r => r.Id, f => f.UniqueIndex + 200)
+                    .RuleFor(r => r.TransactionId, f => t.Id)
+                    .RuleFor(r => r.Amount, f => double.Parse(f.Commerce.Price(0, (int)Math.Abs(Math.Floor(t.Amount)), 2)))
+                    .RuleFor(r => r.RefundDate, f => f.Date.Past())
+                    .RuleFor(r => r.Description, f => f.Lorem.Sentence());
+                return refundFaker.Generate(numRefunds);
+            });
 
         return faker.Generate(count);
     }

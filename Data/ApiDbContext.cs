@@ -12,6 +12,7 @@ public class ApiDbContext : DbContext
     public virtual DbSet<Category> Category { get; set; }
     public virtual DbSet<Source> Source { get; set; }
     public virtual DbSet<Transaction> Transaction { get; set; }
+    public DbSet<Refund> Refunds { get; set; }
 
     public ApiDbContext(DbContextOptions<ApiDbContext> options) : base(options)
     {
@@ -35,6 +36,10 @@ public class ApiDbContext : DbContext
             .HasForeignKey(x => x.SourceId)
             .OnDelete(DeleteBehavior.Restrict)
             .HasConstraintName("FK_Transaction_Source");
+
+            entity.HasMany(i => i.Refunds)
+            .WithOne(r => r.Transaction)
+            .HasForeignKey(r => r.TransactionId);
         });
 
         modelBuilder.Entity<Source>(entity =>

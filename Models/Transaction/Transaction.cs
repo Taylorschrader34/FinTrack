@@ -14,5 +14,6 @@ public class Transaction : BaseEntity
     public string Description { get; set; } = "";
     public virtual Source Source { get; set; }
     public virtual Category Category { get; set; }
+    public virtual ICollection<Refund> Refunds { get; set; }
 
 }
