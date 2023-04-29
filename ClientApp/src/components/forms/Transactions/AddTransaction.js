@@ -31,7 +31,7 @@ const transModel = Schema.Model({
     250,
     "The number of characters can only be between 2 and 250"
   ),
-  datePicker: DateType().isRequired("Please select a date."),
+  transactionDate: DateType().isRequired("Please select a date."),
 });
 
 const defaultFormValue = {
@@ -44,7 +44,7 @@ const defaultFormValue = {
   categoryName: "",
   categoryDescription: "",
   description: "",
-  datePicker: null,
+  transactionDate: null,
 };
 
 const AddTransaction = () => {
@@ -132,7 +132,7 @@ const AddTransaction = () => {
       Source: tSource,
       Category: tCategory,
       Description: formValue.description,
-      TransactionDate: formValue.datePicker,
+      TransactionDate: formValue.transactionDate,
       Refunds: [],
     };
 
@@ -217,10 +217,10 @@ const AddTransaction = () => {
               <Form.Control name="description" ref={formRef} />
             </Form.Group>
 
-            <Form.Group controlId="datePicker">
-              <Form.ControlLabel>DatePicker:</Form.ControlLabel>
+            <Form.Group controlId="transactionDate">
+              <Form.ControlLabel>Transaction Date:</Form.ControlLabel>
               <Form.Control
-                name="datePicker"
+                name="transactionDate"
                 accepter={DatePicker}
                 ref={formRef}
               />

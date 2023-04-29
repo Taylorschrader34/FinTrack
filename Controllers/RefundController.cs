@@ -24,6 +24,7 @@ public class RefundController : ControllerBase
 
     public class RefundInput
     {
+        public int id { get; set; }
         public int TransactionId { get; set; }
         public double Amount { get; set; }
         public DateTime RefundDate { get; set; }
@@ -50,5 +51,53 @@ public class RefundController : ControllerBase
         return transaction.Refunds.Last();
 
     }
+
+    //Edit a Refund
+    [HttpPut("EditRefund")]
+    public async Task<Refund> EditRefund([FromBody] RefundInput refundInput)
+    {
+        var transaction = await _dbContext.Transaction
+             .Include(t => t.Refunds)
+             .Where(t => t.Id == refundInput.TransactionId).FirstOrDefaultAsync();
+
+        var refund = transaction.Refunds.FirstOrDefault(r => r.Id == refundInput.id);
+        if (refund != null)
+        {
+            refund.Amount = refundInput.Amount;
+            refund.Description = refundInput.Description;
+            refund.RefundDate = refundInput.RefundDate;
+            _dbContext.SaveChanges();
+        }
+
+        return refund;
+    }
+
+    [HttpGet("GetRefundById/{id}")]
+    public async Task<Refund> GetRefundById(int id)
+    {
+        var refund = await _dbContext.Refunds.FindAsync(id);
+
+        return refund;
+    }
+
+    [HttpDelete("DeleteRefund/{transactionId}/{refundId}")]
+    public async Task<IActionResult> DeleteRefund(int transactionId, int refundId)
+    {
+
+        var transaction = await _dbContext.Transaction
+             .Include(t => t.Refunds)
+             .Where(t => t.Id == transactionId).FirstOrDefaultAsync();
+
+        var refund = transaction.Refunds.FirstOrDefault(r => r.Id == refundId);
+
+        if (refund != null)
+        {
+            transaction.Refunds.Remove(refund);
+            _dbContext.SaveChanges();
+        }
+
+        return Ok();
+    }
+
 
 }

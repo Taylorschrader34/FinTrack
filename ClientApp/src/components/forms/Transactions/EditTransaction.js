@@ -15,6 +15,7 @@ import {
   Row,
   Col,
 } from "rsuite";
+import RefundTable from "../Refunds/RefundTable";
 
 const { StringType, NumberType, DateType } = Schema.Types;
 const transModel = Schema.Model({
@@ -31,7 +32,7 @@ const transModel = Schema.Model({
     250,
     "The number of characters can only be between 2 and 250"
   ),
-  datePicker: DateType().isRequired("Please select a date."),
+  transactionDate: DateType().isRequired("Please select a date."),
 });
 
 const EditTransaction = () => {
@@ -42,7 +43,7 @@ const EditTransaction = () => {
   const [formValue, setFormValue] = useState({
     amount: 0,
     description: "",
-    datePicker: new Date(),
+    transactionDate: new Date(),
     sourcePicker: 0,
     categoryPicker: 0,
     sourceName: "",
@@ -91,8 +92,6 @@ const EditTransaction = () => {
     try {
       const response = await fetch(`/transaction/GetTransactionById/${id}`);
       const data = await response.json();
-      console.log(data)
-      debugger;
       if(data.id == 0){
         toaster.push(<Message type="error">No Transaction with that Id</Message>);
         navigate("/Transactions");
@@ -114,9 +113,9 @@ const EditTransaction = () => {
       categoryName: "",
       categoryDescription: "",
       description: transaction.description,
-      datePicker: new Date(transaction.transactionDate),
+      transactionDate: new Date(transaction.transactionDate),
     });
-    setRefunds(transaction.Refunds);
+    setRefunds(transaction.refunds);
     setIsIncome(transaction.amount > 0);
   };
 
@@ -171,7 +170,7 @@ const EditTransaction = () => {
       Source: tSource,
       Category: tCategory,
       Description: formValue.description,
-      TransactionDate: formValue.datePicker,
+      TransactionDate: formValue.transactionDate,
       Refunds: [],
     };
 
@@ -249,10 +248,10 @@ const EditTransaction = () => {
               <Form.Control name="description" ref={formRef} />
             </Form.Group>
 
-            <Form.Group controlId="datePicker">
-              <Form.ControlLabel>DatePicker:</Form.ControlLabel>
+            <Form.Group controlId="transactionDate">
+              <Form.ControlLabel>Transaction Date:</Form.ControlLabel>
               <Form.Control
-                name="datePicker"
+                name="transactionDate"
                 accepter={DatePicker}
                 ref={formRef}
               />
@@ -336,6 +335,8 @@ const EditTransaction = () => {
           </Col>
         </Row>
       </Form>
+
+      <RefundTable refunds={refunds}></RefundTable>
     </>
   );
 };

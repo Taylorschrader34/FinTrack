@@ -17,7 +17,7 @@ const defaultFormValue = {
   sourceName: "",
   categoryName: "",
   description: "",
-  datePicker: null,
+  transactionDate: null,
 };
 
 const DeleteTransactionModal = ({ showModal, transaction, onClose }) => {
@@ -37,12 +37,11 @@ const DeleteTransactionModal = ({ showModal, transaction, onClose }) => {
       setFormValue(
         transaction
           ? {
-              transactionId: transaction.transactionId,
               amount: transaction.amount,
               sourceName: transaction.sourceName,
               categoryName: transaction.categoryName,
               description: transaction.description,
-              datePicker: new Date(transaction.transactionDate),
+              transactionDate: new Date(transaction.transactionDate),
             }
           : defaultFormValue
       );
@@ -52,7 +51,7 @@ const DeleteTransactionModal = ({ showModal, transaction, onClose }) => {
   const handleSubmit = () => {
     // Submit the transaction to the backend
 
-    fetch(`/transaction/DeleteTransaction/${transaction?.transactionId}`, {
+    fetch(`/transaction/DeleteTransaction/${transaction?.id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -132,10 +131,10 @@ const DeleteTransactionModal = ({ showModal, transaction, onClose }) => {
             <Form.Control name="description" ref={formRef} disabled />
           </Form.Group>
 
-          <Form.Group controlId="datePicker">
-            <Form.ControlLabel>DatePicker:</Form.ControlLabel>
+          <Form.Group controlId="transactionDate">
+            <Form.ControlLabel>Transaction Date:</Form.ControlLabel>
             <Form.Control
-              name="datePicker"
+              name="transactionDate"
               accepter={DatePicker}
               ref={formRef}
               disabled
