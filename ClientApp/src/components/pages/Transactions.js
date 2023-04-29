@@ -60,7 +60,15 @@ const Transactions = () => {
 
   const getAllTransactions = async () => {
     try {
-      const response = await fetch("/transaction/GetAllTransactions");
+      const response = await fetch(
+        `/transaction/GetAllTransactions`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       const data = await response.json();
       setTransactions(data);
     } catch (error) {

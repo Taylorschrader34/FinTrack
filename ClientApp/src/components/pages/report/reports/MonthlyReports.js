@@ -26,8 +26,6 @@ const MonthlyReports = () => {
       incomeExpenseSelection
     );
 
-    console.log(dataByCatOrSource);
-
     setDataForChart(dataByCatOrSource);
   }, [transactions, catSourceSelection, incomeExpenseSelection]);
 
@@ -77,10 +75,7 @@ const MonthlyReports = () => {
       );
     }
 
-    console.log(groupBy);
-
     const result = [];
-
     if (groupBy == "category") {
       const categories = {};
 
@@ -89,7 +84,15 @@ const MonthlyReports = () => {
         if (!categories[category]) {
           categories[category] = 0;
         }
-        categories[category] += Math.abs(transaction.amount);
+
+        let amount = Math.abs(transaction.amount);
+        if (transaction.refunds?.length > 0) {
+          transaction.refunds.forEach((refund) => {
+            amount -= refund.amount;
+          });
+        }
+
+        categories[category] += amount;
       });
       for (const [category, amount] of Object.entries(categories)) {
         result.push({ category, amount });
