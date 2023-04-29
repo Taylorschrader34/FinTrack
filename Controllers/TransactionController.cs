@@ -59,10 +59,39 @@ public class TransactionController : ControllerBase
     [HttpGet("GetAllTransactions")]
     public async Task<List<Transaction>> GetAllTransactions()
     {
+        //TODO find a more elegant solution
         var transactions = await _dbContext.Transaction
-            .Include(t => t.Source) // Include the Source entity
-            .Include(t => t.Category) // Include the Category entity
-            .Include(t => t.Refunds) // Include the Refund entity
+            .Select(t => new Transaction()
+            {
+                Id = t.Id,
+                Status = t.Status,
+                DateAdded = t.DateAdded,
+                DateUpdated = t.DateUpdated,
+                TransactionDate = t.TransactionDate,
+                SourceId = t.SourceId,
+                CategoryId = t.CategoryId,
+                Amount = t.Amount,
+                Description = t.Description,
+                Source = new Source()
+                {
+                    Id = t.Source.Id,
+                    Status = t.Source.Status,
+                    Name = t.Source.Name,
+                    Description = t.Source.Description,
+                    DateAdded = t.Source.DateAdded,
+                    DateUpdated = t.Source.DateUpdated
+                },
+                Category = new Category()
+                {
+                    Id = t.Category.Id,
+                    Status = t.Category.Status,
+                    Name = t.Category.Name,
+                    Description = t.Category.Description,
+                    DateAdded = t.Category.DateAdded,
+                    DateUpdated = t.Category.DateUpdated
+                },
+                Refunds = t.Refunds
+            })
             .ToListAsync();
 
         return transactions;
@@ -72,9 +101,39 @@ public class TransactionController : ControllerBase
     [HttpGet("GetTransactionsByDateRange")]
     public async Task<List<Transaction>> GetTransactionsByDateRange(DateTime startDate, DateTime endDate)
     {
+        //TODO find a more elegant solution
         var transactions = await _dbContext.Transaction
-            .Include(t => t.Source) // Include the Source entity
-            .Include(t => t.Category) // Include the Category entity
+            .Select(t => new Transaction()
+            {
+                Id = t.Id,
+                Status = t.Status,
+                DateAdded = t.DateAdded,
+                DateUpdated = t.DateUpdated,
+                TransactionDate = t.TransactionDate,
+                SourceId = t.SourceId,
+                CategoryId = t.CategoryId,
+                Amount = t.Amount,
+                Description = t.Description,
+                Source = new Source()
+                {
+                    Id = t.Source.Id,
+                    Status = t.Source.Status,
+                    Name = t.Source.Name,
+                    Description = t.Source.Description,
+                    DateAdded = t.Source.DateAdded,
+                    DateUpdated = t.Source.DateUpdated
+                },
+                Category = new Category()
+                {
+                    Id = t.Category.Id,
+                    Status = t.Category.Status,
+                    Name = t.Category.Name,
+                    Description = t.Category.Description,
+                    DateAdded = t.Category.DateAdded,
+                    DateUpdated = t.Category.DateUpdated
+                },
+                Refunds = t.Refunds
+            })
             .Where(t => t.TransactionDate >= startDate && t.TransactionDate <= endDate)
             .ToListAsync();
 

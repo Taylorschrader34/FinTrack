@@ -105,7 +105,7 @@ const EditTransaction = () => {
   const updateFormValues = async (transaction) => {
     setFormValue({
       transactionId: transaction.id,
-      amount: transaction.amount,
+      amount: Math.abs(transaction.amount),
       sourcePicker: transaction.sourceId,
       sourceName: "",
       sourceDescription: "",
