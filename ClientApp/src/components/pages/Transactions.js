@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "rsuite/dist/rsuite.min.css";
 import { format, subMonths } from "date-fns";
+import { useNavigate } from "react-router-dom";
 
 import {
   Table,
@@ -12,25 +13,28 @@ import {
   DateRangePicker,
 } from "rsuite";
 
+import DeleteTransactionModal from "../forms/DeleteTransactionModal";
+
 import TrashIcon from "@rsuite/icons/Trash";
 import EditIcon from "@rsuite/icons/Edit";
-import TransactionModal from "../forms/TransactionModal";
-import DeleteTransactionModal from "../forms/DeleteTransactionModal";
+import ReloadIcon from "@rsuite/icons/Reload";
 
 const { Column, HeaderCell, Cell } = Table;
 
-const ManageTransactions = () => {
+const Transactions = () => {
+  const navigate = useNavigate();
+
   const [selectedDateRange, setSelectedDateRange] = useState({
     startDate: subMonths(new Date(), 1),
     endDate: new Date(),
   });
 
+  const [showDelTransModal, setShowDelTransModal] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState(null);
+
   const [transactions, setTransactions] = useState(new Array());
   const [sortedTransactions, setSortedTransactions] = useState(new Array());
   const [slicedTransactions, setSlicedTransactions] = useState(new Array());
-  const [showTransModal, setShowTransModal] = useState(false);
-  const [showDelTransModal, setShowDelTransModal] = useState(false);
-  const [selectedTransaction, setSelectedTransaction] = useState(null);
 
   const [currentPage, setCurrentPage] = useState(1); // Current page of the pagination
   const [pageSize, setPageSize] = useState(10); // Number of items per page
@@ -94,18 +98,16 @@ const ManageTransactions = () => {
     );
   };
 
-  // Handle page change
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
-  // Handle page size change
+  //TODO
   const handlePageSizeChange = (size) => {
     // setCurrentPage(1); // Reset to first page when page size changes
     // setPageSize(size);
   };
 
-  // Handle column sort
   const handleSortColumn = (sortColumn, sortType) => {
     setSortColumn(sortColumn);
     setSortType(sortType);
@@ -150,26 +152,24 @@ const ManageTransactions = () => {
     setTotalPages(Math.ceil(sortedTransactions.length / pageSize));
   }, [sortedTransactions, currentPage]);
 
-  // Handler to open the modal for adding a new transaction
   const handleAddTransaction = () => {
-    setSelectedTransaction(null);
-    setShowTransModal(true);
+    navigate("/Transactions/Add");
   };
 
-  // Handler to open the modal for editing a transaction
+  const handleAddRefund = (transaction) => {
+    navigate(`/Refunds/add/${transaction.transactionId}`);
+  };
+
   const handleEditTransaction = (transaction) => {
-    setSelectedTransaction(transaction);
-    setShowTransModal(true);
+    navigate(`/Transactions/edit/${transaction.transactionId}`);
   };
 
-  // Handler to delete a transaction
   const handleDeleteTransaction = (transaction) => {
     setSelectedTransaction(transaction);
     setShowDelTransModal(true);
   };
 
   const handleModalClose = () => {
-    setShowTransModal(false);
     setShowDelTransModal(false);
     fetchTransactions();
   };
@@ -178,7 +178,7 @@ const ManageTransactions = () => {
     <div>
       <FlexboxGrid justify="center" align="middle">
         <FlexboxGrid.Item colspan={8}>
-          {<h1>Manage Transactions</h1>}
+          {<h1> Transactions</h1>}
         </FlexboxGrid.Item>
         <FlexboxGrid.Item colspan={16}>
           {
@@ -223,17 +223,17 @@ const ManageTransactions = () => {
         </Column>
         <Column width={150} align="center" resizable sortable>
           <HeaderCell>Source</HeaderCell>
-          <Cell dataKey="sourceName" />
+          <Cell dataKey="source[name]" />
         </Column>
         <Column width={150} align="center" resizable sortable>
           <HeaderCell>Category</HeaderCell>
-          <Cell dataKey="categoryName" />
+          <Cell dataKey="category[name]" />
         </Column>
         <Column width={200} align="center" resizable sortable>
           <HeaderCell>Description</HeaderCell>
           <Cell dataKey="description" />
         </Column>
-        <Column width={100} fixed="right" align="center" resizable>
+        <Column width={150} fixed="right" align="center" resizable>
           <HeaderCell>Edit/Delete</HeaderCell>
           <Cell>
             {(rowData) => (
@@ -244,6 +244,13 @@ const ManageTransactions = () => {
                   appearance="ghost"
                   color="blue"
                   onClick={() => handleEditTransaction(rowData)}
+                />
+                <IconButton
+                  icon={<ReloadIcon />}
+                  size="xs"
+                  appearance="ghost"
+                  color="green"
+                  onClick={() => handleAddRefund(rowData)}
                 />
                 <IconButton
                   icon={<TrashIcon />}
@@ -270,11 +277,6 @@ const ManageTransactions = () => {
         activePage={currentPage}
         onSelect={handlePageChange}
       />
-      <TransactionModal
-        showModal={showTransModal}
-        transaction={selectedTransaction}
-        onClose={() => handleModalClose()}
-      />
       <DeleteTransactionModal
         showModal={showDelTransModal}
         transaction={selectedTransaction}
@@ -284,4 +286,4 @@ const ManageTransactions = () => {
   );
 };
 
-export default ManageTransactions;
+export default Transactions;

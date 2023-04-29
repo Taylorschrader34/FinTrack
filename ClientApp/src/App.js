@@ -1,13 +1,16 @@
 import React from "react";
 import { Routes, Route } from "react-router";
 
+import "./App.css";
+
 import Layout from "./components/pages/Layout";
 import Home from "./components/pages/Home";
 import NoPage from "./components/pages/NoPage";
 import Reports from "./components/pages/report/Reports";
-import ManageTransactions from "./components/pages/ManageTransactions";
-
-import "./App.css";
+import Transactions from "./components/pages/Transactions";
+import EditTransaction from "./components/forms/Transactions/EditTransaction";
+import AddTransaction from "./components/forms/Transactions/AddTransaction";
+import AddRefund from "./components/forms/Transactions/AddRefund";
 
 function App() {
   return (
@@ -23,7 +26,10 @@ function App() {
           element={<Reports reportType={"yearly"} />}
         />
         <Route path="Reports" element={<Reports />} />
-        <Route path="Transactions" element={<ManageTransactions />} />
+        <Route path="Transactions" element={<Transactions />} />
+        <Route path="Transactions/Add" element={<AddTransaction />} />
+        <Route path="Transactions/Edit/:id" element={<EditTransaction />} />
+        <Route path="Refunds/Add/:id" element={<AddRefund />} />
         <Route path="*" element={<NoPage />} />
       </Route>
     </Routes>
