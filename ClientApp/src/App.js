@@ -10,7 +10,8 @@ import Reports from "./components/pages/report/Reports";
 import Transactions from "./components/pages/Transactions";
 import EditTransaction from "./components/forms/Transactions/EditTransaction";
 import AddTransaction from "./components/forms/Transactions/AddTransaction";
-import AddRefund from "./components/forms/Transactions/AddRefund";
+import AddRefund from "./components/forms/Refunds/AddRefund";
+import EditRefund from "./components/forms/Refunds/EditRefund";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
         <Route path="Transactions/Add" element={<AddTransaction />} />
         <Route path="Transactions/Edit/:id" element={<EditTransaction />} />
         <Route path="Refunds/Add/:id" element={<AddRefund />} />
+        <Route path="Refunds/Edit/:id" element={<EditRefund />} />
         <Route path="*" element={<NoPage />} />
       </Route>
     </Routes>

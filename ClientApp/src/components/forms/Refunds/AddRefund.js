@@ -17,13 +17,13 @@ import {
 const { NumberType, DateType } = Schema.Types;
 const refundModel = Schema.Model({
   amount: NumberType().isRequired("Amount is required."),
-  datePicker: DateType().isRequired("Please select a date."),
+  refundDate: DateType().isRequired("Please select a date."),
 });
 
 const defaultFormValue = {
   amount: 0,
   description: "",
-  datePicker: null,
+  refundDate: null,
 };
 
 const AddRefund = () => {
@@ -34,7 +34,7 @@ const AddRefund = () => {
   const [formError, setFormError] = useState({});
   const [formValue, setFormValue] = useState(defaultFormValue);
 
-  const [transaction, setTransaction] = useState(defaultFormValue);
+  const [transaction, setTransaction] = useState({});
 
   useEffect(() => {
     getTransaction();
@@ -66,10 +66,10 @@ const AddRefund = () => {
     }
 
     const refundInput = {
-      TransactionId: transaction.transactionId,
+      TransactionId: transaction.id,
       Amount: Math.abs(formValue.amount),
       Description: formValue.description,
-      RefundDate: formValue.datePicker,
+      RefundDate: formValue.refundDate,
     };
 
     // Submit the refund to the backend
@@ -139,10 +139,10 @@ const AddRefund = () => {
               <Form.Control name="description" ref={formRef} />
             </Form.Group>
 
-            <Form.Group controlId="datePicker">
-              <Form.ControlLabel>DatePicker:</Form.ControlLabel>
+            <Form.Group controlId="refundDate">
+              <Form.ControlLabel>Refund Date:</Form.ControlLabel>
               <Form.Control
-                name="datePicker"
+                name="refundDate"
                 accepter={DatePicker}
                 ref={formRef}
               />

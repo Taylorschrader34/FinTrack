@@ -13,7 +13,7 @@ import {
   DateRangePicker,
 } from "rsuite";
 
-import DeleteTransactionModal from "../forms/DeleteTransactionModal";
+import DeleteTransactionModal from "../forms/Transactions/DeleteTransactionModal";
 
 import TrashIcon from "@rsuite/icons/Trash";
 import EditIcon from "@rsuite/icons/Edit";
@@ -157,11 +157,11 @@ const Transactions = () => {
   };
 
   const handleAddRefund = (transaction) => {
-    navigate(`/Refunds/add/${transaction.transactionId}`);
+    navigate(`/Refunds/add/${transaction.id}`);
   };
 
   const handleEditTransaction = (transaction) => {
-    navigate(`/Transactions/edit/${transaction.transactionId}`);
+    navigate(`/Transactions/edit/${transaction.id}`);
   };
 
   const handleDeleteTransaction = (transaction) => {
