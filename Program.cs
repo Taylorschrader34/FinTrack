@@ -43,8 +43,8 @@ if (app.Environment.IsDevelopment())
         dbContext.Database.EnsureCreated(); // Ensure the database is created
 
         // Adjust the parameters as needed
-        FakeDataGenerator.GenerateFakeData(dbContext, 100, 50, 200);
-        //FakeDataGenerator.GenerateFakeData(dbContext, 0, 0, 0);
+        FakeDataGenerator.GenerateFakeData(dbContext, 100, 50, 30, 200);
+        //FakeDataGenerator.GenerateFakeData(dbContext, 0, 0, 0, 0);
         dbContext.SaveChanges(); // Save changes to persist fake data in memory
     }
 }
