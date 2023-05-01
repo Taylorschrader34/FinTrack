@@ -13,6 +13,8 @@ public class ApiDbContext : DbContext
     public virtual DbSet<Source> Source { get; set; }
     public virtual DbSet<Transaction> Transaction { get; set; }
     public DbSet<Refund> Refunds { get; set; }
+    public DbSet<Tag> Tags { get; set; }
+    public DbSet<TransactionTag> TransactionTags { get; set; }
 
     public ApiDbContext(DbContextOptions<ApiDbContext> options) : base(options)
     {
@@ -40,6 +42,19 @@ public class ApiDbContext : DbContext
             entity.HasMany(i => i.Refunds)
             .WithOne(r => r.Transaction)
             .HasForeignKey(r => r.TransactionId);
+        });
+
+        modelBuilder.Entity<TransactionTag>(entity =>
+        {
+            entity.HasKey(tt => new { tt.TransactionId, tt.TagId });
+
+            entity.HasOne(tt => tt.Transaction)
+            .WithMany(t => t.TransactionTags)
+            .HasForeignKey(tt => tt.TransactionId);
+
+            entity.HasOne(tt => tt.Tag)
+            .WithMany(t => t.TransactionTags)
+            .HasForeignKey(tt => tt.TagId);
         });
 
         modelBuilder.Entity<Source>(entity =>

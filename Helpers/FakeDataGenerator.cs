@@ -39,7 +39,23 @@ public class FakeDataGenerator
         return filteredFakedResults;
     }
 
-    public static List<Transaction> GenerateTransactions(int count, List<Category> categories, List<Source> sources)
+    public static List<Tag> GenerateTags(int count)
+    {
+        var faker = new Faker<Tag>()
+            .RuleFor(t => t.Id, f => f.UniqueIndex + 100)
+            .RuleFor(t => t.Name, f => f.Address.State())
+            .RuleFor(t => t.Description, f => f.Lorem.Sentence());
+
+        var fakedResults = faker.Generate(count);
+        var filteredFakedResults = fakedResults
+            .GroupBy(t => t.Name)
+            .Select(g => g.First())
+            .ToList();
+
+        return filteredFakedResults;
+    }
+
+    public static List<Transaction> GenerateTransactions(int count, List<Category> categories, List<Source> sources, List<Tag> tags)
     {
         var faker = new Faker<Transaction>()
             .RuleFor(t => t.Id, f => f.UniqueIndex + 100)
@@ -60,12 +76,19 @@ public class FakeDataGenerator
                     .RuleFor(r => r.RefundDate, f => f.Date.Past())
                     .RuleFor(r => r.Description, f => f.Lorem.Sentence());
                 return refundFaker.Generate(numRefunds);
+            })
+            .RuleFor(t => t.TransactionTags, (f, t) =>
+            {
+                var numTags = f.Random.Int(0, 3);
+                var tagIds = f.PickRandom(tags, numTags).Select(tag => tag.Id).ToList();
+                var transactionTags = tagIds.Select(tagId => new TransactionTag { TransactionId = t.Id, TagId = tagId }).ToList();
+                return transactionTags;
             });
 
         return faker.Generate(count);
     }
 
-    public static void GenerateFakeData(ApiDbContext dbContext, int categoryCount, int sourceCount, int transactionCount)
+    public static void GenerateFakeData(ApiDbContext dbContext, int categoryCount, int sourceCount, int tagCount, int transactionCount)
     {
         // Generate categories
         var categories = GenerateCategories(categoryCount);
@@ -73,11 +96,15 @@ public class FakeDataGenerator
         // Generate sources
         var sources = GenerateSources(sourceCount);
 
+        // Generate tags
+        var tags = GenerateTags(tagCount);
+
         // Generate transactions
-        var transactions = GenerateTransactions(transactionCount, categories, sources);
+        var transactions = GenerateTransactions(transactionCount, categories, sources, tags);
 
         dbContext.Category.AddRange(categories);
         dbContext.Source.AddRange(sources);
+        dbContext.Tags.AddRange(tags);
         dbContext.Transaction.AddRange(transactions);
     }
 }
