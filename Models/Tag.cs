@@ -7,6 +7,10 @@ namespace FinTrack.Models;
 
 public class Tag : BaseEntity
 {
+    public Tag()
+    {
+        TransactionTags = new HashSet<TransactionTag>();
+    }
     public string Name { get; set; }
     public string Description { get; set; }
 

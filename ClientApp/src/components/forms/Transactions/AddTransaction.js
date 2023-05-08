@@ -9,11 +9,13 @@ import {
   InputPicker,
   InputNumber,
   Checkbox,
+  TagPicker,
   Schema,
   Message,
   toaster,
   Row,
   Col,
+  List,
 } from "rsuite";
 
 const { StringType, NumberType, DateType } = Schema.Types;
@@ -43,6 +45,7 @@ const defaultFormValue = {
   categoryPicker: 0,
   categoryName: "",
   categoryDescription: "",
+  tagPicker: [],
   description: "",
   transactionDate: null,
 };
@@ -55,15 +58,21 @@ const AddTransaction = () => {
 
   const [showNewSourceInput, setShowNewSourceInput] = useState(false);
   const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
+  const [showNewTagInput, setShowNewTagInput] = useState(false);
 
   const [sourceOptions, setSourceOptions] = useState([]);
   const [categoryOptions, setCategoryOptions] = useState([]);
+  const [tagOptions, setTagOptions] = useState([]);
+  const [tagName, setTagName] = useState("");
+  const [tagDescription, setTagDescription] = useState("");
+  const [newTags, setNewTags] = useState([]);
 
   const [isIncome, setIsIncome] = useState(false);
 
   useEffect(() => {
     getAllSources();
     getAllCategories();
+    getAllTags();
   }, []);
 
   const getAllSources = async () => {
@@ -83,6 +92,26 @@ const AddTransaction = () => {
       setCategoryOptions(data);
     } catch (error) {
       console.error("Failed to fetch categories:", error);
+    }
+  };
+
+  const getAllTags = async () => {
+    try {
+      const response = await fetch("/tag/GetAllTags");
+      const data = await response.json();
+      setTagOptions(data);
+    } catch (error) {
+      console.error("Failed to fetch tags:", error);
+    }
+  };
+
+  const handleAddTag = () => {
+    if (tagName != "") {
+      setNewTags([...newTags, { name: tagName, description: tagDescription }]);
+      setTagName("");
+      setTagDescription("");
+    } else {
+      toaster.push(<Message type="error">Tag must have a name.</Message>);
     }
   };
 
@@ -125,6 +154,23 @@ const AddTransaction = () => {
       tCategory.id = formValue.categoryPicker;
     }
 
+    //Fill new Transaction's Tags with the existing selected
+    // AND/OR newly entered data
+    var tTags = [];
+
+    formValue.tagPicker.forEach((tagId) => {
+      tTags = [...tTags, { id: tagId, name: "", description: "" }];
+    });
+
+    if (showNewTagInput) {
+      newTags.forEach((tag) => {
+        tTags = [
+          ...tTags,
+          { id: 0, name: tag.name, description: tag.description },
+        ];
+      });
+    }
+
     const transInput = {
       Amount: isIncome
         ? Math.abs(formValue.amount)
@@ -134,6 +180,7 @@ const AddTransaction = () => {
       Description: formValue.description,
       TransactionDate: formValue.transactionDate,
       Refunds: [],
+      tags: tTags,
     };
 
     // Submit the transaction to the backend
@@ -195,6 +242,9 @@ const AddTransaction = () => {
             onClick={() => setShowNewCategoryInput(!showNewCategoryInput)}
           >
             {showNewSourceInput ? "Add Existing Category" : "Add New Category"}
+          </Button>
+          <Button onClick={() => setShowNewTagInput(!showNewTagInput)}>
+            {showNewTagInput ? "Don't Add New Tags" : "Add New Tags"}
           </Button>
         </ButtonToolbar>
         <Divider />
@@ -275,6 +325,52 @@ const AddTransaction = () => {
                   <Form.Control name="categoryDescription" ref={formRef} />
                 </Form.Group>
               </>
+            )}
+
+            <Form.Group controlId="tagPicker">
+              <Form.ControlLabel>Tags:</Form.ControlLabel>
+              <Form.Control
+                name="tagPicker"
+                accepter={TagPicker}
+                ref={formRef}
+                data={tagOptions}
+                labelKey="name" // Display tag.name as the label
+                valueKey="id" // Set tag.id as the value
+              />
+            </Form.Group>
+
+            {showNewTagInput ? (
+              <>
+                <Form.Group>
+                  <Form.ControlLabel>Tag Name</Form.ControlLabel>
+                  <Form.Control
+                    name="tagName"
+                    value={tagName}
+                    onChange={(value) => setTagName(value)}
+                  />
+                </Form.Group>
+                <Form.Group>
+                  <Form.ControlLabel>Tag Description</Form.ControlLabel>
+                  <Form.Control
+                    name="tagDescription"
+                    value={tagDescription}
+                    onChange={(value) => setTagDescription(value)}
+                  />
+                </Form.Group>
+                <Button onClick={handleAddTag}>Add Tag</Button>
+                <List bordered>
+                  {newTags.map((tag, index) => (
+                    <List.Item key={index}>
+                      <div>
+                        <div>Tag Name: {tag.name}</div>
+                        <div>Tag Name: {tag.description}</div>
+                      </div>
+                    </List.Item>
+                  ))}
+                </List>
+              </>
+            ) : (
+              <></>
             )}
 
             <Form.Group>
