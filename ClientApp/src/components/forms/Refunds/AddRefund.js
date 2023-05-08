@@ -43,14 +43,24 @@ const AddRefund = () => {
   const getTransaction = async () => {
     try {
       const response = await fetch(`/transaction/GetTransactionById/${id}`);
-      const data = await response.json();
-      if (data.transactionId == 0) {
-        toaster.push(
-          <Message type="error">No Transaction with that Id</Message>
+      if (response.ok) {
+        const data = await response.json();
+        if (data.transactionId == 0) {
+          toaster.push(
+            <Message type="error">No Transaction with that Id</Message>
+          );
+          navigate("/Transactions");
+        }
+        setTransaction(data);
+      } else if (response.status === 404) {
+        console.log("Transaction not found");
+        return null;
+      } else {
+        console.log(
+          "Error fetching sources, categories, refunds, and/or tags."
         );
-        navigate("/Transactions");
+        return null;
       }
-      setTransaction(data);
     } catch (error) {
       console.error(`Failed to fetch transaction with Id ${id}:`, error);
     }

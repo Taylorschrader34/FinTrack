@@ -25,7 +25,7 @@ public class TransactionController : ControllerBase
     // Handle Creating new Transaction
     // Also checks for new or existing Source and Category
     [HttpPost("ProcessTransaction")]
-    public ActionResult<string> ProcessTransaction([FromBody] TransactionInputModel transactionInput)
+    public async Task<ActionResult<string>> ProcessTransactionAsync([FromBody] TransactionInputModel transactionInput)
     {
         try
         {
@@ -34,7 +34,7 @@ public class TransactionController : ControllerBase
 
             Category category = CategoryHelper.GetExistingOrCreateNewCategory(_dbContext, transactionInput);
 
-            Transaction transaction = TransactionHelper.UpdateOrCreateNewTransaction(_dbContext, transactionInput, source, category);
+            Transaction transaction = await TransactionHelper.UpdateOrCreateNewTransactionAsync(_dbContext, transactionInput, source, category);
 
             _dbContext.SaveChanges();
 
@@ -148,7 +148,10 @@ public class TransactionController : ControllerBase
             .Include(t => t.Source)
             .Include(t => t.Category)
             .Include(t => t.Refunds)
+            .Include(t => t.TransactionTags)
+                .ThenInclude(tt => tt.Tag)
             .FirstOrDefaultAsync(t => t.Id == id);
+
         if (transaction == null)
         {
             return new Transaction();

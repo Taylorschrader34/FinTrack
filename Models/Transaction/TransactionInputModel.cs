@@ -9,5 +9,6 @@ public class TransactionInputModel
     public Source Source { get; set; }
     public Category Category { get; set; }
     public ICollection<Refund> Refunds { get; set; }
+    public ICollection<Tag> Tags { get; set; }
 
 }

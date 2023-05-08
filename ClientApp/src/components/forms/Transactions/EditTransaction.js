@@ -16,6 +16,8 @@ import {
   Col,
 } from "rsuite";
 import RefundTable from "../Refunds/RefundTable";
+import TagTable from "../Tags/TagTable";
+import AddTagModal from "../Tags/AddTagModal";
 
 const { StringType, NumberType, DateType } = Schema.Types;
 const transModel = Schema.Model({
@@ -55,10 +57,12 @@ const EditTransaction = () => {
 
   const [showNewSourceInput, setShowNewSourceInput] = useState(false);
   const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
+  const [showAddTagModal, setShowAddTagModal] = useState(false);
 
   const [sourceOptions, setSourceOptions] = useState([]);
   const [categoryOptions, setCategoryOptions] = useState([]);
   const [refunds, setRefunds] = useState([]);
+  const [tags, setTags] = useState([]);
 
   const [isIncome, setIsIncome] = useState(false);
 
@@ -91,12 +95,24 @@ const EditTransaction = () => {
   const getTransaction = async () => {
     try {
       const response = await fetch(`/transaction/GetTransactionById/${id}`);
-      const data = await response.json();
-      if(data.id == 0){
-        toaster.push(<Message type="error">No Transaction with that Id</Message>);
-        navigate("/Transactions");
+      if (response.ok) {
+        const data = await response.json();
+        if (data.transactionId == 0) {
+          toaster.push(
+            <Message type="error">No Transaction with that Id</Message>
+          );
+          navigate("/Transactions");
+        }
+        updateFormValues(data);
+      } else if (response.status === 404) {
+        console.log("Transaction not found");
+        return null;
+      } else {
+        console.log(
+          "Error fetching sources, categories, refunds, and/or tags."
+        );
+        return null;
       }
-      updateFormValues(data);
     } catch (error) {
       console.error(`Failed to fetch transaction with Id ${id}:`, error);
     }
@@ -115,8 +131,20 @@ const EditTransaction = () => {
       description: transaction.description,
       transactionDate: new Date(transaction.transactionDate),
     });
-    setRefunds(transaction.refunds);
     setIsIncome(transaction.amount > 0);
+    setRefunds(transaction.refunds);
+
+    var tempTags = [];
+    transaction.transactionTags.forEach((transactionTag) => {
+      tempTags.push({
+        id: transactionTag.tag.id,
+        transactionId: transactionTag.transactionId,
+        name: transactionTag.tag.name,
+        description: transactionTag.tag.description,
+      });
+    });
+
+    setTags(tempTags);
   };
 
   const handleCheckboxChange = () => {
@@ -172,6 +200,7 @@ const EditTransaction = () => {
       Description: formValue.description,
       TransactionDate: formValue.transactionDate,
       Refunds: [],
+      Tags: [],
     };
 
     // Submit the transaction to the backend
@@ -207,6 +236,19 @@ const EditTransaction = () => {
       );
   };
 
+  const handleAddRefund = () => {
+    navigate(`/Refunds/add/${id}`);
+  };
+
+  const handleAddTag = () => {
+    setShowAddTagModal(true);
+  };
+
+  const handleModalClose = () => {
+    setShowAddTagModal(false);
+    navigate(`/Transactions`);
+  };
+
   return (
     <>
       <h1>Edit Transaction</h1>
@@ -225,8 +267,12 @@ const EditTransaction = () => {
           <Button
             onClick={() => setShowNewCategoryInput(!showNewCategoryInput)}
           >
-            {showNewSourceInput ? "Add Existing Category" : "Add New Category"}
+            {showNewCategoryInput
+              ? "Add Existing Category"
+              : "Add New Category"}
           </Button>
+          <Button onClick={() => handleAddRefund()}>{"Add New Refund"}</Button>
+          <Button onClick={() => handleAddTag()}>{"Add New Tag"}</Button>
         </ButtonToolbar>
         <Divider />
 
@@ -337,6 +383,12 @@ const EditTransaction = () => {
       </Form>
 
       <RefundTable refunds={refunds}></RefundTable>
+      <TagTable tags={tags}></TagTable>
+      <AddTagModal
+        showModal={showAddTagModal}
+        transactionId={id}
+        onClose={() => handleModalClose()}
+      />
     </>
   );
 };

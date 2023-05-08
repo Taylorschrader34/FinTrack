@@ -9,6 +9,7 @@ const context =  [
   "/transaction",
   "/source",
   "/refund",
+  "/tag",
 ];
 
 module.exports = function(app) {

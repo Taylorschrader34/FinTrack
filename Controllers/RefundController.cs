@@ -30,6 +30,7 @@ public class RefundController : ControllerBase
         public DateTime RefundDate { get; set; }
         public string Description { get; set; } = "";
     }
+
     //Create a new Refund
     [HttpPost("CreateRefund")]
     public async Task<Refund> CreateRefund([FromBody] RefundInput refundInput)
@@ -45,7 +46,7 @@ public class RefundController : ControllerBase
             .Where(t => t.Id == refund.TransactionId).FirstOrDefaultAsync();
 
         transaction.Refunds.Add(refund);
-        _dbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync();
 
         // Return the response in the Ok response
         return transaction.Refunds.Last();
@@ -98,6 +99,5 @@ public class RefundController : ControllerBase
 
         return Ok();
     }
-
 
 }
