@@ -34,12 +34,14 @@ public class TagController : ControllerBase
     [HttpGet("GetAllTags")]
     public async Task<ActionResult<List<Tag>>> GetAllTags()
     {
-        var tags = await _dbContext.Tags.ToListAsync();
-        if (tags == null || tags.Count == 0)
-        {
-            return NotFound();
-        }
-        return Ok(tags);
+        return await _dbContext.Tags.ToListAsync();
+        //TODO come back here and fix this
+        // var tags = await _dbContext.Tags.ToListAsync();
+        // if (tags == null || tags.Count == 0)
+        // {
+        //     return NotFound();
+        // }
+        // return Ok(tags);
     }
 
     //Create a new Tag
@@ -59,6 +61,7 @@ public class TagController : ControllerBase
             tag.Name = transactionTagInput.Name;
             tag.Description = transactionTagInput.Description;
             _dbContext.Tags.Add(tag);
+            _dbContext.SaveChanges();
 
             transactionTag.TransactionId = transactionTagInput.TransactionId;
             transactionTag.TagId = tag.Id;

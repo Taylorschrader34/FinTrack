@@ -236,12 +236,12 @@ const AddTransaction = () => {
             Clear form data
           </Button>
           <Button onClick={() => setShowNewSourceInput(!showNewSourceInput)}>
-            {showNewSourceInput ? "Add Existing Source" : "Add New Sourece"}
+            {showNewSourceInput ? "Add Existing Source" : "Add New Source"}
           </Button>
           <Button
             onClick={() => setShowNewCategoryInput(!showNewCategoryInput)}
           >
-            {showNewSourceInput ? "Add Existing Category" : "Add New Category"}
+            {showNewCategoryInput ? "Add Existing Category" : "Add New Category"}
           </Button>
           <Button onClick={() => setShowNewTagInput(!showNewTagInput)}>
             {showNewTagInput ? "Don't Add New Tags" : "Add New Tags"}

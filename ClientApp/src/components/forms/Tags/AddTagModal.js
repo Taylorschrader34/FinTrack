@@ -63,8 +63,6 @@ const AddTagModal = ({ showModal, transactionId, onClose }) => {
       Description: "",
     };
 
-    debugger;
-
     if (showNewTagInput) {
       tag.Name = formValue.tagName;
       tag.Description = formValue.tagDescription;
@@ -86,7 +84,7 @@ const AddTagModal = ({ showModal, transactionId, onClose }) => {
           response.json().then((data) => {
             toaster.push(<Message type="success">Success</Message>);
           });
-          navigate("/Transactions");
+          onClose();
         } else {
           // Handle error response
           toaster.push(

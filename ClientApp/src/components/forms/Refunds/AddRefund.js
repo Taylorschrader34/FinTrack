@@ -96,7 +96,7 @@ const AddRefund = () => {
           response.json().then((data) => {
             toaster.push(<Message type="success">Success</Message>);
           });
-          navigate("/Transactions");
+          navigate(`/Transactions/edit/${id}`);
         } else {
           // Handle error response
           toaster.push(
