@@ -9,7 +9,7 @@ import DeleteTagModal from "./DeleteTagModal";
 
 const { Column, HeaderCell, Cell } = Table;
 
-const TagTable = ({ tags }) => {
+const TagTable = ({ tags, getTransaction }) => {
   const navigate = useNavigate();
 
   const [showDelTagModal, setShowDelTagModal] = useState(false);
@@ -22,8 +22,8 @@ const TagTable = ({ tags }) => {
 
   const handleModalClose = () => {
     setShowDelTagModal(false);
-    navigate(`/Transactions`);
     setSelectedTag(null);
+    getTransaction();
   };
 
   return (

@@ -8,12 +8,19 @@ public class TransactionHelper
 {
     public static async Task<Transaction> UpdateOrCreateNewTransactionAsync(ApiDbContext _dbContext, TransactionInputModel transactionInput, Source source, Category category)
     {
+
+        //TODO COME BACK HERE AND FIX THIS
         Transaction transaction = await TransactionHelper.GetExistingTransactionAsync(_dbContext, transactionInput.TransactionId);
+        var isEdit = false;
         if (transaction == null)
         {
             // Transaction does not exist, so create a new one.
             transaction = new Transaction();
             _dbContext.Transaction.Add(transaction);
+        }
+        else
+        {
+            isEdit = true;
         }
 
         transaction.TransactionDate = new DateTime(
@@ -25,8 +32,12 @@ public class TransactionHelper
         transaction.Description = transactionInput.Description;
         transaction.Source = source;
         transaction.Category = category;
+        _dbContext.SaveChanges();
 
-        await setTransactionTagsAsync(_dbContext, transactionInput.Tags, transaction.Id);
+        if (!isEdit)
+        {
+            await setTransactionTagsAsync(_dbContext, transactionInput.Tags, transaction.Id);
+        }
 
         return transaction;
     }
@@ -58,6 +69,7 @@ public class TransactionHelper
                 if (transactionTag != null)
                 {
                     _dbContext.TransactionTags.Remove(transactionTag);
+                    _dbContext.SaveChanges();
                 }
             }
         }
@@ -72,6 +84,7 @@ public class TransactionHelper
                 transactionTag.TransactionId = transactionId;
                 transactionTag.TagId = tag.Id;
                 _dbContext.TransactionTags.Add(transactionTag);
+                _dbContext.SaveChanges();
             }
         }
 
@@ -88,6 +101,7 @@ public class TransactionHelper
                 };
                 newTags.Add(newTag);
                 _dbContext.Tags.Add(newTag);
+                _dbContext.SaveChanges();
             }
         }
 
@@ -98,6 +112,7 @@ public class TransactionHelper
             transactionTag.TransactionId = transactionId;
             transactionTag.TagId = tag.Id;
             _dbContext.TransactionTags.Add(transactionTag);
+            _dbContext.SaveChanges();
         }
     }
 

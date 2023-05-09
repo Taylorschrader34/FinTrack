@@ -14,11 +14,7 @@ public class CategoryHelper
         //Create new Category if needed
         if (category == null)
         {
-            category = new Category();
-            category.Name = transactionInput.Category.Name;
-            category.Description = transactionInput.Category.Description;
-
-            _dbContext.Category.Add(category);
+            category = CreateNewCategory(_dbContext, transactionInput);
         }
 
         return category;

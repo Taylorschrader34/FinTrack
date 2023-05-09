@@ -11,7 +11,7 @@ import DeleteRefundModal from "./DeleteRefundModal";
 
 const { Column, HeaderCell, Cell } = Table;
 
-const RefundTable = ({ refunds }) => {
+const RefundTable = ({ refunds, getTransaction }) => {
   const navigate = useNavigate();
 
   const [showDelRefundModal, setShowDelRefundModal] = useState(false);
@@ -19,7 +19,6 @@ const RefundTable = ({ refunds }) => {
 
 
   const handleEditRefund = async (refund) => {
-    console.log(refund);
     navigate(`/Refunds/Edit/${refund.id}`);
   };
 
@@ -30,8 +29,8 @@ const RefundTable = ({ refunds }) => {
 
   const handleModalClose = () => {
     setShowDelRefundModal(false);
-    navigate(`/Transactions`);
     setSelectedRefund(null);
+    getTransaction();
   };
 
   return (

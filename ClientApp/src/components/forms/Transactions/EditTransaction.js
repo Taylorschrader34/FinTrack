@@ -217,7 +217,7 @@ const EditTransaction = () => {
           response.json().then((data) => {
             toaster.push(<Message type="success">Success</Message>);
           });
-          navigate("/Transactions");
+          getTransaction();
         } else {
           // Handle error response
           toaster.push(
@@ -246,7 +246,7 @@ const EditTransaction = () => {
 
   const handleModalClose = () => {
     setShowAddTagModal(false);
-    navigate(`/Transactions`);
+    getTransaction();
   };
 
   return (
@@ -262,7 +262,7 @@ const EditTransaction = () => {
       >
         <ButtonToolbar>
           <Button onClick={() => setShowNewSourceInput(!showNewSourceInput)}>
-            {showNewSourceInput ? "Add Existing Source" : "Add New Sourece"}
+            {showNewSourceInput ? "Add Existing Source" : "Add New Source"}
           </Button>
           <Button
             onClick={() => setShowNewCategoryInput(!showNewCategoryInput)}
@@ -382,8 +382,11 @@ const EditTransaction = () => {
         </Row>
       </Form>
 
-      <RefundTable refunds={refunds}></RefundTable>
-      <TagTable tags={tags}></TagTable>
+      <RefundTable
+        refunds={refunds}
+        getTransaction={() => getTransaction()}
+      ></RefundTable>
+      <TagTable tags={tags} getTransaction={() => getTransaction()}></TagTable>
       <AddTagModal
         showModal={showAddTagModal}
         transactionId={id}

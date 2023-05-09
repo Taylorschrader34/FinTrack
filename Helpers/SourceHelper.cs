@@ -14,11 +14,7 @@ public class SourceHelper
         //Create new Source if needed
         if (source == null)
         {
-            source = new Source();
-            source.Name = transactionInput.Source.Name;
-            source.Description = transactionInput.Source.Description;
-
-            _dbContext.Source.Add(source);
+            source = CreateNewSource(_dbContext, transactionInput);
         }
 
         return source;
