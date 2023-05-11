@@ -35,7 +35,7 @@ public class TagController : ControllerBase
     public async Task<ActionResult<List<Tag>>> GetAllTags()
     {
         return await _dbContext.Tags.ToListAsync();
-        //TODO come back here and fix this
+        //TODO fix this
         // var tags = await _dbContext.Tags.ToListAsync();
         // if (tags == null || tags.Count == 0)
         // {

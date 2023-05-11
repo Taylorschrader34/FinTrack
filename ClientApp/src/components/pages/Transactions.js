@@ -110,7 +110,7 @@ const Transactions = () => {
     setCurrentPage(page);
   };
 
-  //TODO
+  //TODO implement this
   const handlePageSizeChange = (size) => {
     // setCurrentPage(1); // Reset to first page when page size changes
     // setPageSize(size);
@@ -127,8 +127,19 @@ const Transactions = () => {
       ? transactions.sort((a, b) => {
           const sortColumnKey = sortColumn || "id";
           const sortTypeDirection = sortType === "asc" ? 1 : -1;
-          const valA = a[sortColumnKey];
-          const valB = b[sortColumnKey];
+          var valA;
+          var valB;
+
+          if(sortColumnKey != "source[name]" && sortColumnKey != "category[name]"){
+            valA = a[sortColumnKey];
+            valB = b[sortColumnKey];
+          }else if(sortColumnKey == "source[name]"){
+            valA = a.source.name;
+            valB = b.source.name;
+          }else if(sortColumnKey == "category[name]"){
+            valA = a.category.name;
+            valB = b.category.name;
+          }
 
           if (valA === valB) {
             return 0;
