@@ -59,7 +59,7 @@ public class TransactionController : ControllerBase
     [HttpGet("GetAllTransactions")]
     public async Task<List<Transaction>> GetAllTransactions()
     {
-        //TODO find a more elegant solution
+        //TODO refactor to make more elegant
         var transactions = await _dbContext.Transaction
             .Select(t => new Transaction()
             {
@@ -101,7 +101,7 @@ public class TransactionController : ControllerBase
     [HttpGet("GetTransactionsByDateRange")]
     public async Task<List<Transaction>> GetTransactionsByDateRange(DateTime startDate, DateTime endDate)
     {
-        //TODO find a more elegant solution
+        //TODO refactor to make more elegant
         var transactions = await _dbContext.Transaction
             .Select(t => new Transaction()
             {
