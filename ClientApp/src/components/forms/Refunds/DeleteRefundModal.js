@@ -23,30 +23,25 @@ const DeleteRefundModal = ({ showModal, refund, onClose }) => {
   const [formValue, setFormValue] = useState(defaultFormValue);
 
   useEffect(() => {
-    // Fetch sources from backend when modal is shown
     if (showModal) {
       updateFormValues();
     }
   }, [showModal]);
 
   const updateFormValues = async () => {
-    console.log(refund);
     if (refund) {
-      setFormValue(
-        refund
-          ? {
-              transactionId: refund.transactionId,
-              amount: refund.amount,
-              description: refund.description,
-              refundDate: new Date(refund.refundDate),
-            }
-          : defaultFormValue
-      );
+      setFormValue(() => ({
+        transactionId: refund.transactionId,
+        amount: refund.amount,
+        description: refund.description,
+        refundDate: new Date(refund.refundDate),
+      }));
+    } else {
+      setFormValue(defaultFormValue);
     }
   };
 
   const handleSubmit = () => {
-    // Submit the transaction to the backend
     fetch(`/refund/DeleteRefund/${refund?.transactionId}/${refund?.id}`, {
       method: "DELETE",
       headers: {
@@ -55,11 +50,9 @@ const DeleteRefundModal = ({ showModal, refund, onClose }) => {
     })
       .then((response) => {
         if (response.ok) {
-          // Handle successful refund deletion
           toaster.push(<Message type="success">Success</Message>);
           handleClose();
         } else {
-          // Handle error response
           response.text().then((text) => {
             toaster.push(
               <Message type="error">{"Error deleting refund:" + text}</Message>
