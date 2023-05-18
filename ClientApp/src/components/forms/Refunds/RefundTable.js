@@ -1,10 +1,7 @@
-import React, { useState, useEffect } from "react";
-import "rsuite/dist/rsuite.min.css";
+import React, { useState } from "react";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
-
 import { Table, ButtonToolbar, IconButton } from "rsuite";
-
 import TrashIcon from "@rsuite/icons/Trash";
 import EditIcon from "@rsuite/icons/Edit";
 import DeleteRefundModal from "./DeleteRefundModal";
@@ -17,12 +14,11 @@ const RefundTable = ({ refunds, getTransaction }) => {
   const [showDelRefundModal, setShowDelRefundModal] = useState(false);
   const [selectedRefund, setSelectedRefund] = useState(null);
 
-
-  const handleEditRefund = async (refund) => {
+  const handleEditRefund = (refund) => {
     navigate(`/Refunds/Edit/${refund.id}`);
   };
 
-  const hanldeDeleteRefund = (refund) => {
+  const handleDeleteRefund = (refund) => {
     setSelectedRefund(refund);
     setShowDelRefundModal(true);
   };
@@ -75,7 +71,7 @@ const RefundTable = ({ refunds, getTransaction }) => {
                   size="xs"
                   appearance="ghost"
                   color="red"
-                  onClick={() => hanldeDeleteRefund(rowData)}
+                  onClick={() => handleDeleteRefund(rowData)}
                 />
               </ButtonToolbar>
             )}
@@ -85,7 +81,7 @@ const RefundTable = ({ refunds, getTransaction }) => {
       <DeleteRefundModal
         showModal={showDelRefundModal}
         refund={selectedRefund}
-        onClose={() => handleModalClose()}
+        onClose={handleModalClose}
       />
     </>
   );
