@@ -16,23 +16,34 @@ builder.Services.AddControllersWithViews().AddNewtonsoftJson(options =>
 
 var environment = builder.Environment;
 
-if (environment.IsDevelopment())
+var env = builder.Configuration.GetValue<string>("Environment");
+
+switch (env)
 {
-    builder.Services.AddDbContext<ApiDbContext>(options =>
-        options.UseInMemoryDatabase("FinTrackDb")
-        .EnableSensitiveDataLogging()); // Use in-memory database in development
-}
-else
-{
-    builder.Services.AddEntityFrameworkNpgsql()
+    case "DEV":
+        builder.Services.AddDbContext<ApiDbContext>(options =>
+            options.UseInMemoryDatabase("FinTrackDb")
+                .EnableSensitiveDataLogging());
+        break;
+    case "TEST":
+        builder.Services.AddEntityFrameworkNpgsql()
             .AddDbContext<ApiDbContext>(opt =>
-            opt.UseNpgsql(builder.Configuration.GetConnectionString("finTrackDbConnection"))
-            .EnableSensitiveDataLogging());
+                opt.UseNpgsql(builder.Configuration.GetConnectionString("finTrackDbConnectionTest"))
+                    .EnableSensitiveDataLogging());
+        break;
+    case "PROD":
+        builder.Services.AddEntityFrameworkNpgsql()
+            .AddDbContext<ApiDbContext>(opt =>
+                opt.UseNpgsql(builder.Configuration.GetConnectionString("finTrackDbConnection"))
+                    .EnableSensitiveDataLogging());
+        break;
+    default:
+        throw new ArgumentException("Invalid environment value specified in appsettings.json");
 }
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+if (env == "DEV")
 {
     // Generate fake data and store in memory
     using (var scope = app.Services.CreateScope())
