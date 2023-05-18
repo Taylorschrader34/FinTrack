@@ -1,6 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-
+import React, { useEffect, useRef, useState } from "react";
 import {
   Modal,
   Form,
@@ -13,26 +11,26 @@ import {
 
 const defaultFormValue = {
   transactionId: 0,
-  tagId: 0,
-  tagName: "",
-  tagDescription: "",
+  tagPicker: 0
+};
+
+const defaultNewTag = {
+  transactionId: 0,
+  tagPicker: 0
 };
 
 const AddTagModal = ({ showModal, transactionId, onClose }) => {
-  const navigate = useNavigate();
-
   const formRef = useRef();
   const [formError, setFormError] = useState({});
   const [formValue, setFormValue] = useState(defaultFormValue);
-
   const [showNewTagInput, setShowNewTagInput] = useState(false);
-
   const [tagOptions, setTagOptions] = useState([]);
-  const [tagName, setTagName] = useState("");
-  const [tagDescription, setTagDescription] = useState("");
+  const [newTag, setNewTag] = useState({
+    tagName: "",
+    tagDescription: "",
+  });
 
   useEffect(() => {
-    // Fetch sources from backend when modal is shown
     if (showModal) {
       getAllTags();
     }
@@ -54,9 +52,7 @@ const AddTagModal = ({ showModal, transactionId, onClose }) => {
       return;
     }
 
-    //Fill new Transaction's Tags with the existing selected
-    // AND/OR newly entered data
-    var tag = {
+    const tag = {
       TransactionId: transactionId,
       TagId: 0,
       Name: "",
@@ -64,13 +60,16 @@ const AddTagModal = ({ showModal, transactionId, onClose }) => {
     };
 
     if (showNewTagInput) {
-      tag.Name = formValue.tagName;
-      tag.Description = formValue.tagDescription;
+      if (!newTag.tagName) {
+        toaster.push(<Message type="error">New tag must have a name.</Message>);
+        return;
+      }
+      tag.Name = newTag.tagName;
+      tag.Description = newTag.tagDescription;
     } else {
       tag.TagId = formValue.tagPicker;
     }
 
-    // Submit the refund to the backend
     fetch("/tag/CreateTransactionTag", {
       method: "POST",
       headers: {
@@ -80,13 +79,9 @@ const AddTagModal = ({ showModal, transactionId, onClose }) => {
     })
       .then((response) => {
         if (response.ok) {
-          // Handle successful refund creation
-          response.json().then((data) => {
-            toaster.push(<Message type="success">Success</Message>);
-          });
-          onClose();
+          toaster.push(<Message type="success">Success</Message>);
+          handleModalClose();
         } else {
-          // Handle error response
           toaster.push(
             <Message type="error">
               {`Error creating tag: ${response.status}`}
@@ -101,15 +96,19 @@ const AddTagModal = ({ showModal, transactionId, onClose }) => {
       );
   };
 
-  const handleClose = () => {
+  const handleModalClose = () => {
     setFormValue(defaultFormValue);
+    setNewTag({
+      tagName: "",
+      tagDescription: "",
+    });
     onClose();
   };
 
   return (
-    <Modal open={showModal} onClose={handleClose}>
+    <Modal open={showModal} onClose={handleModalClose}>
       <Modal.Header>
-        <Modal.Title>{"Add Tag to Transaction"}</Modal.Title>
+        <Modal.Title>Add Tag to Transaction</Modal.Title>
       </Modal.Header>
       <ButtonToolbar>
         <Button onClick={() => setShowNewTagInput(!showNewTagInput)}>
@@ -120,28 +119,28 @@ const AddTagModal = ({ showModal, transactionId, onClose }) => {
         <Form
           ref={formRef}
           onChange={setFormValue}
-          onCheck={setFormError}
+          onCheck={(error) => setFormError(error)}
           formValue={formValue}
         >
-          <ButtonToolbar></ButtonToolbar>
           <hr />
-
           {showNewTagInput ? (
             <>
               <Form.Group>
                 <Form.ControlLabel>Tag Name</Form.ControlLabel>
                 <Form.Control
                   name="tagName"
-                  value={tagName}
-                  onChange={(value) => setTagName(value)}
+                  value={newTag.tagName}
+                  onChange={(value) => setNewTag({ ...newTag, tagName: value })}
                 />
               </Form.Group>
               <Form.Group>
                 <Form.ControlLabel>Tag Description</Form.ControlLabel>
                 <Form.Control
                   name="tagDescription"
-                  value={tagDescription}
-                  onChange={(value) => setTagDescription(value)}
+                  value={newTag.tagDescription}
+                  onChange={(value) =>
+                    setNewTag({ ...newTag, tagDescription: value })
+                  }
                 />
               </Form.Group>
             </>
@@ -151,17 +150,16 @@ const AddTagModal = ({ showModal, transactionId, onClose }) => {
               <Form.Control
                 name="tagPicker"
                 accepter={InputPicker}
-                ref={formRef}
                 data={tagOptions}
-                labelKey="name" // Display tag.name as the label
-                valueKey="id" // Set tag.id as the value
+                labelKey="name"
+                valueKey="id"
               />
             </Form.Group>
           )}
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        <Button onClick={handleClose} appearance="subtle">
+        <Button onClick={handleModalClose} appearance="subtle">
           Cancel
         </Button>
         <Button onClick={handleSubmit} appearance="primary">
