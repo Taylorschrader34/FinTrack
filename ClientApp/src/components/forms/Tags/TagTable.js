@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "rsuite/dist/rsuite.min.css";
 import { useNavigate } from "react-router-dom";
 
@@ -15,7 +15,7 @@ const TagTable = ({ tags, getTransaction }) => {
   const [showDelTagModal, setShowDelTagModal] = useState(false);
   const [selectedTag, setSelectedTag] = useState(null);
 
-  const hanldeDeleteTag = (tag) => {
+  const handleDeleteTag = (tag) => {
     setSelectedTag(tag);
     setShowDelTagModal(true);
   };
@@ -55,7 +55,7 @@ const TagTable = ({ tags, getTransaction }) => {
                   size="xs"
                   appearance="ghost"
                   color="red"
-                  onClick={() => hanldeDeleteTag(rowData)}
+                  onClick={() => handleDeleteTag(rowData)}
                 />
               </ButtonToolbar>
             )}
@@ -65,7 +65,7 @@ const TagTable = ({ tags, getTransaction }) => {
       <DeleteTagModal
         showModal={showDelTagModal}
         tag={selectedTag}
-        onClose={() => handleModalClose()}
+        onClose={handleModalClose}
       />
     </>
   );

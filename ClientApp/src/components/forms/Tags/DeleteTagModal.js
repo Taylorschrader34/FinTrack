@@ -1,16 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  Modal,
-  Form,
-  Button,
-  ButtonToolbar,
-  Message,
-  toaster,
-} from "rsuite";
+import { Modal, Form, Button, Message, toaster } from "rsuite";
 
 const defaultFormValue = {
   transactionId: 0,
-  name: 0,
+  name: "",
   description: "",
 };
 
@@ -20,29 +13,24 @@ const DeleteTagModal = ({ showModal, tag, onClose }) => {
   const [formValue, setFormValue] = useState(defaultFormValue);
 
   useEffect(() => {
-    // Fetch sources from backend when modal is shown
     if (showModal) {
       updateFormValues();
     }
   }, [showModal]);
 
-  const updateFormValues = async () => {
-    console.log(tag);
+  const updateFormValues = () => {
     if (tag) {
-      setFormValue(
-        tag
-          ? {
-              transactionId: tag.transactionId,
-              name: tag.name,
-              description: tag.description,
-            }
-          : defaultFormValue
-      );
+      setFormValue({
+        transactionId: tag.transactionId,
+        name: tag.name,
+        description: tag.description,
+      });
+    } else {
+      setFormValue(defaultFormValue);
     }
   };
 
   const handleSubmit = () => {
-    // Submit the transaction to the backend
     fetch(`/tag/DeleteTransactionTag/${tag?.transactionId}/${tag?.id}`, {
       method: "DELETE",
       headers: {
@@ -51,34 +39,32 @@ const DeleteTagModal = ({ showModal, tag, onClose }) => {
     })
       .then((response) => {
         if (response.ok) {
-          // Handle successful tag deletion
           toaster.push(<Message type="success">Success</Message>);
-          handleClose();
+          handleModalClose();
         } else {
-          // Handle error response
           response.text().then((text) => {
             toaster.push(
-              <Message type="error">{"Error deleting tag:" + text}</Message>
+              <Message type="error">{"Error deleting tag: " + text}</Message>
             );
           });
         }
       })
       .catch((error) =>
         toaster.push(
-          <Message type="error">{"Error deleting tag:" + error}</Message>
+          <Message type="error">{"Error deleting tag: " + error}</Message>
         )
       );
   };
 
-  const handleClose = () => {
+  const handleModalClose = () => {
     setFormValue(defaultFormValue);
     onClose();
   };
 
   return (
-    <Modal open={showModal} onClose={handleClose}>
+    <Modal open={showModal} onClose={handleModalClose}>
       <Modal.Header>
-        <Modal.Title>{"Are you sure you wish to delete this Tag?"}</Modal.Title>
+        <Modal.Title>Are you sure you wish to delete this Tag?</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form
@@ -87,21 +73,19 @@ const DeleteTagModal = ({ showModal, tag, onClose }) => {
           onCheck={setFormError}
           formValue={formValue}
         >
-          <ButtonToolbar></ButtonToolbar>
           <hr />
-
           <Form.Group controlId="name">
             <Form.ControlLabel>Name:</Form.ControlLabel>
-            <Form.Control name="name" ref={formRef} disabled />
+            <Form.Control name="name" disabled />
           </Form.Group>
           <Form.Group controlId="description">
             <Form.ControlLabel>Description:</Form.ControlLabel>
-            <Form.Control name="description" ref={formRef} disabled />
+            <Form.Control name="description" disabled />
           </Form.Group>
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        <Button onClick={handleClose} appearance="subtle">
+        <Button onClick={handleModalClose} appearance="subtle">
           Cancel
         </Button>
         <Button onClick={handleSubmit} appearance="primary">
