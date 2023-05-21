@@ -22,14 +22,6 @@ public class TagController : ControllerBase
         _dbContext = dbContext;
     }
 
-    public class TransactionTagInput
-    {
-        public int TagId { get; set; }
-        public int TransactionId { get; set; }
-        public string Name { get; set; } = "";
-        public string Description { get; set; } = "";
-    }
-
     // Read all tag
     [HttpGet("GetAllTags")]
     public async Task<ActionResult<List<Tag>>> GetAllTags()
@@ -46,7 +38,7 @@ public class TagController : ControllerBase
 
     //Create a new Tag
     [HttpPost("CreateTransactionTag")]
-    public async Task<Tag> CreateTransactionTag([FromBody] TransactionTagInput transactionTagInput)
+    public async Task<Tag> CreateTransactionTag([FromBody] TransactionTagInputModel transactionTagInput)
     {
         var tag = new Tag();
         var transactionTag = new TransactionTag();
