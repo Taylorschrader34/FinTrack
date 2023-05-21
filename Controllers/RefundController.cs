@@ -22,18 +22,9 @@ public class RefundController : ControllerBase
         _dbContext = dbContext;
     }
 
-    public class RefundInput
-    {
-        public int id { get; set; }
-        public int TransactionId { get; set; }
-        public double Amount { get; set; }
-        public DateTime RefundDate { get; set; }
-        public string Description { get; set; } = "";
-    }
-
     //Create a new Refund
     [HttpPost("CreateRefund")]
-    public async Task<Refund> CreateRefund([FromBody] RefundInput refundInput)
+    public async Task<Refund> CreateRefund([FromBody] RefundInputModel refundInput)
     {
         var refund = new Refund();
         refund.Amount = refundInput.Amount;
@@ -55,13 +46,13 @@ public class RefundController : ControllerBase
 
     //Edit a Refund
     [HttpPut("EditRefund")]
-    public async Task<Refund> EditRefund([FromBody] RefundInput refundInput)
+    public async Task<Refund> EditRefund([FromBody] RefundInputModel refundInput)
     {
         var transaction = await _dbContext.Transaction
              .Include(t => t.Refunds)
              .Where(t => t.Id == refundInput.TransactionId).FirstOrDefaultAsync();
 
-        var refund = transaction.Refunds.FirstOrDefault(r => r.Id == refundInput.id);
+        var refund = transaction.Refunds.FirstOrDefault(r => r.Id == refundInput.Id);
         if (refund != null)
         {
             refund.Amount = refundInput.Amount;
