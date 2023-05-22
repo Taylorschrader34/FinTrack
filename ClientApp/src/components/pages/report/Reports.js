@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Col, Row, Nav, NavItem, NavLink } from "reactstrap";
 
-import MonthlyReports from "./reports/MonthlyReports";
-import YearlyReport from "./reports/YearlyReport";
+import MonthlyReports from "./reports/Monthly/MonthlyReports";
+import YearlyReport from "./reports/Yearly/YearlyReport";
 
 const Reports = () => {
   const [reportType, setReportType] = useState("monthly");

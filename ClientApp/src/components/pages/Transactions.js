@@ -48,6 +48,59 @@ const Transactions = () => {
     fetchTransactions();
   }, [selectedDateRange]);
 
+  // Sort data based on sort column and sort type
+  useEffect(() => {
+    const newSortedTransactions = Array.isArray(transactions)
+      ? transactions.sort((a, b) => {
+          const sortColumnKey = sortColumn || "id";
+          const sortTypeDirection = sortType === "asc" ? 1 : -1;
+          var valA;
+          var valB;
+
+          if (
+            sortColumnKey != "source[name]" &&
+            sortColumnKey != "category[name]"
+          ) {
+            valA = a[sortColumnKey];
+            valB = b[sortColumnKey];
+          } else if (sortColumnKey == "source[name]") {
+            valA = a.source.name;
+            valB = b.source.name;
+          } else if (sortColumnKey == "category[name]") {
+            valA = a.category.name;
+            valB = b.category.name;
+          }
+
+          if (valA === valB) {
+            return 0;
+          } else if (valA === null || valA === undefined) {
+            return sortTypeDirection;
+          } else if (valB === null || valB === undefined) {
+            return -sortTypeDirection;
+          } else if (typeof valA === "string" && typeof valB === "string") {
+            return valA.localeCompare(valB) * sortTypeDirection;
+          } else {
+            return (valA - valB) * sortTypeDirection;
+          }
+        })
+      : [];
+
+    setSortedTransactions([...newSortedTransactions]);
+  }, [transactions, sortColumn, sortType]);
+
+  // Sort data based on sort column and sort type
+  // Calculate total number of pages
+  useEffect(() => {
+    setSlicedTransactions(
+      sortedTransactions.slice(
+        (currentPage - 1) * pageSize,
+        currentPage * pageSize
+      )
+    );
+
+    setTotalPages(Math.ceil(sortedTransactions.length / pageSize));
+  }, [sortedTransactions, currentPage]);
+
   // Fetch transactions and setTransactions with the retrieved data
   const fetchTransactions = () => {
     selectedDateRange.startDate && selectedDateRange.endDate
@@ -60,15 +113,12 @@ const Transactions = () => {
 
   const getAllTransactions = async () => {
     try {
-      const response = await fetch(
-        `/transaction/GetAllTransactions`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(`/transaction/GetAllTransactions`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       const data = await response.json();
       setTransactions(data);
     } catch (error) {
@@ -120,56 +170,6 @@ const Transactions = () => {
     setSortColumn(sortColumn);
     setSortType(sortType);
   };
-
-  // Sort data based on sort column and sort type
-  useEffect(() => {
-    const newSortedTransactions = Array.isArray(transactions)
-      ? transactions.sort((a, b) => {
-          const sortColumnKey = sortColumn || "id";
-          const sortTypeDirection = sortType === "asc" ? 1 : -1;
-          var valA;
-          var valB;
-
-          if(sortColumnKey != "source[name]" && sortColumnKey != "category[name]"){
-            valA = a[sortColumnKey];
-            valB = b[sortColumnKey];
-          }else if(sortColumnKey == "source[name]"){
-            valA = a.source.name;
-            valB = b.source.name;
-          }else if(sortColumnKey == "category[name]"){
-            valA = a.category.name;
-            valB = b.category.name;
-          }
-
-          if (valA === valB) {
-            return 0;
-          } else if (valA === null || valA === undefined) {
-            return sortTypeDirection;
-          } else if (valB === null || valB === undefined) {
-            return -sortTypeDirection;
-          } else if (typeof valA === "string" && typeof valB === "string") {
-            return valA.localeCompare(valB) * sortTypeDirection;
-          } else {
-            return (valA - valB) * sortTypeDirection;
-          }
-        })
-      : [];
-
-    setSortedTransactions([...newSortedTransactions]);
-  }, [transactions, sortColumn, sortType]);
-
-  // Sort data based on sort column and sort type
-  // Calculate total number of pages
-  useEffect(() => {
-    setSlicedTransactions(
-      sortedTransactions.slice(
-        (currentPage - 1) * pageSize,
-        currentPage * pageSize
-      )
-    );
-
-    setTotalPages(Math.ceil(sortedTransactions.length / pageSize));
-  }, [sortedTransactions, currentPage]);
 
   const handleAddTransaction = () => {
     navigate("/Transactions/Add");
