@@ -50,9 +50,10 @@ const Transactions = () => {
 
   // Sort data based on sort column and sort type
   useEffect(() => {
+    console.log(transactions);
     const newSortedTransactions = Array.isArray(transactions)
       ? transactions.sort((a, b) => {
-          const sortColumnKey = sortColumn || "id";
+          const sortColumnKey = sortColumn || "transactionDate";
           const sortTypeDirection = sortType === "asc" ? 1 : -1;
           var valA;
           var valB;
