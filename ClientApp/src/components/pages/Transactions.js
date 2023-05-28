@@ -50,7 +50,6 @@ const Transactions = () => {
 
   // Sort data based on sort column and sort type
   useEffect(() => {
-    console.log(transactions);
     const newSortedTransactions = Array.isArray(transactions)
       ? transactions.sort((a, b) => {
           const sortColumnKey = sortColumn || "transactionDate";
