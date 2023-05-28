@@ -92,6 +92,7 @@ public class TransactionController : ControllerBase
                 },
                 Refunds = t.Refunds
             })
+            .OrderBy(t => t.TransactionDate)
             .ToListAsync();
 
         return transactions;
@@ -135,6 +136,7 @@ public class TransactionController : ControllerBase
                 Refunds = t.Refunds
             })
             .Where(t => t.TransactionDate >= startDate && t.TransactionDate <= endDate)
+            .OrderBy(t => t.TransactionDate)
             .ToListAsync();
 
         return transactions;
