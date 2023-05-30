@@ -23,7 +23,7 @@ public class SourceController : ControllerBase
     [HttpGet("GetAllSources")]
     public async Task<List<Source>> GetAllSources()
     {
-        return await _dbContext.Source.ToListAsync();
+        return await _dbContext.Source.OrderBy(s => s.Name).ToListAsync();
     }
 
 }

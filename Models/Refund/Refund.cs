@@ -5,9 +5,8 @@ using System.Threading.Tasks;
 
 namespace FinTrack.Models;
 
-public class Refund
+public class Refund : BaseEntity
 {
-    public int Id { get; set; }
     public int TransactionId { get; set; }
     public double Amount { get; set; }
     public DateTime RefundDate { get; set; }
