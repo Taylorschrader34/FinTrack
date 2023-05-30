@@ -23,7 +23,7 @@ public class CategoryController : ControllerBase
     [HttpGet("GetAllCategories")]
     public async Task<List<Category>> GetAllCategories()
     {
-        return await _dbContext.Category.ToListAsync();
+        return await _dbContext.Category.OrderBy(c => c.Name).ToListAsync();
     }
 
 }

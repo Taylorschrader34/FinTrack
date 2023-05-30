@@ -26,7 +26,7 @@ public class TagController : ControllerBase
     [HttpGet("GetAllTags")]
     public async Task<ActionResult<List<Tag>>> GetAllTags()
     {
-        return await _dbContext.Tags.ToListAsync();
+        return await _dbContext.Tags.OrderBy(t => t.Name).ToListAsync();
         //TODO fix this
         // var tags = await _dbContext.Tags.ToListAsync();
         // if (tags == null || tags.Count == 0)
