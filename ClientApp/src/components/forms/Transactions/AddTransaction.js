@@ -171,6 +171,23 @@ const AddTransaction = () => {
       });
     }
 
+    //This needs reworking to not just save everything at noon time
+    //But this is a band-aid fix for dates getting messed up with time
+    //zone conversions when saving to the database
+    const transactionDateNoon = new Date(
+      formValue.transactionDate.getUTCFullYear(),
+      formValue.transactionDate.getUTCMonth(),
+      formValue.transactionDate.getUTCDate(),
+      12, // Set the hour to 12 (noon) in UTC
+      0, // Set minutes to 0
+      0, // Set seconds to 0
+      0 // Set milliseconds to 0
+    );
+
+    transactionDateNoon.setMinutes(
+      transactionDateNoon.getMinutes() - transactionDateNoon.getTimezoneOffset()
+    );
+
     const transInput = {
       Amount: isIncome
         ? Math.abs(formValue.amount)
@@ -178,7 +195,7 @@ const AddTransaction = () => {
       Source: tSource,
       Category: tCategory,
       Description: formValue.description,
-      TransactionDate: formValue.transactionDate,
+      TransactionDate: transactionDateNoon.toISOString(),
       Refunds: [],
       tags: tTags,
     };
@@ -241,7 +258,9 @@ const AddTransaction = () => {
           <Button
             onClick={() => setShowNewCategoryInput(!showNewCategoryInput)}
           >
-            {showNewCategoryInput ? "Add Existing Category" : "Add New Category"}
+            {showNewCategoryInput
+              ? "Add Existing Category"
+              : "Add New Category"}
           </Button>
           <Button onClick={() => setShowNewTagInput(!showNewTagInput)}>
             {showNewTagInput ? "Don't Add New Tags" : "Add New Tags"}
