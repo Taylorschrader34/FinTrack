@@ -12,6 +12,7 @@ import EditTransaction from "./components/forms/Transactions/EditTransaction";
 import AddTransaction from "./components/forms/Transactions/AddTransaction";
 import AddRefund from "./components/forms/Refunds/AddRefund";
 import EditRefund from "./components/forms/Refunds/EditRefund";
+import BulkImport from "./components/pages/BulkImport";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
         <Route path="Transactions/Edit/:id" element={<EditTransaction />} />
         <Route path="Refunds/Add/:id" element={<AddRefund />} />
         <Route path="Refunds/Edit/:id" element={<EditRefund />} />
+        <Route path="BulkImport" element={<BulkImport />} />
         <Route path="*" element={<NoPage />} />
       </Route>
     </Routes>
