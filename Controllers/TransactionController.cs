@@ -30,7 +30,7 @@ public class TransactionController : ControllerBase
         try
         {
 
-            Source source = SourceHelper.GetExistingOrCreateNewSoure(_dbContext, transactionInput);
+            Source source = SourceHelper.GetExistingOrCreateNewSource(_dbContext, transactionInput);
 
             Category category = CategoryHelper.GetExistingOrCreateNewCategory(_dbContext, transactionInput);
 

@@ -174,19 +174,28 @@ const AddTransaction = () => {
     //This needs reworking to not just save everything at noon time
     //But this is a band-aid fix for dates getting messed up with time
     //zone conversions when saving to the database
+    //Also this doesn't work all the time so needs a closer look and fix
     const transactionDateNoon = new Date(
       formValue.transactionDate.getUTCFullYear(),
       formValue.transactionDate.getUTCMonth(),
       formValue.transactionDate.getUTCDate(),
+      // formValue.transactionDate.getUTCDate() - 1,
       12, // Set the hour to 12 (noon) in UTC
       0, // Set minutes to 0
       0, // Set seconds to 0
       0 // Set milliseconds to 0
     );
 
+    // console.log(transactionDateNoon);
+
     transactionDateNoon.setMinutes(
       transactionDateNoon.getMinutes() - transactionDateNoon.getTimezoneOffset()
     );
+
+    // console.log(formValue.transactionDate);
+    // console.log(formValue.transactionDate.toISOString());
+    // console.log(transactionDateNoon);
+    // console.log(transactionDateNoon.toISOString());
 
     const transInput = {
       Amount: isIncome
