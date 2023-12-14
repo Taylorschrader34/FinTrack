@@ -6,7 +6,7 @@ namespace FinTrack.Helpers;
 public class SourceHelper
 {
 
-    public static Source GetExistingOrCreateNewSoure(ApiDbContext _dbContext, TransactionInputModel transactionInput)
+    public static Source GetExistingOrCreateNewSource(ApiDbContext _dbContext, TransactionInputModel transactionInput)
     {
 
         Source source = SourceHelper.GetExistingSource(_dbContext, transactionInput.Source);
