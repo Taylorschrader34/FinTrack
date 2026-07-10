@@ -25,13 +25,13 @@ const transModel = Schema.Model({
   sourceName: StringType().rangeLength(
     2,
     250,
-    "The number of characters can only be between 2 and 250"
+    "The number of characters can only be between 2 and 250",
   ),
   categoryPicker: NumberType().isInteger("Must be a valid id."),
   categoryName: StringType().rangeLength(
     2,
     250,
-    "The number of characters can only be between 2 and 250"
+    "The number of characters can only be between 2 and 250",
   ),
   transactionDate: DateType().isRequired("Please select a date."),
 });
@@ -171,6 +171,11 @@ const AddTransaction = () => {
       });
     }
 
+    // console.log(formValue.transactionDate);
+    // console.log(formValue.transactionDate.getUTCFullYear());
+    // console.log(formValue.transactionDate.getUTCMonth());
+    // console.log(formValue.transactionDate.getUTCDate());
+
     //This needs reworking to not just save everything at noon time
     //But this is a band-aid fix for dates getting messed up with time
     //zone conversions when saving to the database
@@ -180,16 +185,18 @@ const AddTransaction = () => {
       formValue.transactionDate.getUTCMonth(),
       formValue.transactionDate.getUTCDate(),
       // formValue.transactionDate.getUTCDate() - 1,
+      //TODO FIX THIS DATA ISSUE
       12, // Set the hour to 12 (noon) in UTC
       0, // Set minutes to 0
       0, // Set seconds to 0
-      0 // Set milliseconds to 0
+      0, // Set milliseconds to 0
     );
 
     // console.log(transactionDateNoon);
 
     transactionDateNoon.setMinutes(
-      transactionDateNoon.getMinutes() - transactionDateNoon.getTimezoneOffset()
+      transactionDateNoon.getMinutes() -
+        transactionDateNoon.getTimezoneOffset(),
     );
 
     // console.log(formValue.transactionDate);
@@ -229,7 +236,7 @@ const AddTransaction = () => {
           toaster.push(
             <Message type="error">
               {`Error creating transaction: ${response.status}`}
-            </Message>
+            </Message>,
           );
         }
       })
@@ -237,8 +244,8 @@ const AddTransaction = () => {
         toaster.push(
           <Message type="error">
             {`Error creating transaction: ${error}`}
-          </Message>
-        )
+          </Message>,
+        ),
       );
   };
 
